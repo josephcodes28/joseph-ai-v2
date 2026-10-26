@@ -247,3 +247,4 @@
 
   console.info("Joseph AI V2 interface initialized.");
 })();
+  
