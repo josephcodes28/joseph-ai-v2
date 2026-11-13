@@ -4,693 +4,730 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080d18">
-  <meta name="description" content="Joseph AI — Your intelligent AI workspace for building websites and creating content.">
-  <title>Joseph AI V2 — AI Workspace</title>
+  <meta name="theme-color" content="#101116">
+  <meta name="description" content="Joseph AI - Your intelligent AI assistant, creative studio and digital work partner.">
+  <title>Joseph AI — Your AI Workspace</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 
 <body>
-  <div class="app-shell">
+  <div class="app-shell" id="appShell">
+
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-logo">J</div>
-        <div class="brand-text">
-          <strong>JOSEPH AI</strong>
-          <span>YOUR AI WORKSPACE</span>
-        </div>
-        <button class="icon-button sidebar-close" id="closeSidebar" aria-label="Close menu">×</button>
+
+      <div class="sidebar-top">
+        <a href="#" class="brand" data-open-page="brain" aria-label="Joseph AI home">
+          <div class="brand-logo">J</div>
+          <div class="brand-text">
+            <strong>JOSEPH AI</strong>
+            <span>Intelligent Workspace</span>
+          </div>
+        </a>
+
+        <button class="icon-button sidebar-close" id="closeSidebar" type="button" aria-label="Close sidebar">
+          ×
+        </button>
       </div>
 
-      <div class="sidebar-label">WORKSPACE</div>
+      <button class="new-chat-button" id="newChatButton" type="button">
+        <span class="new-chat-icon">＋</span>
+        <span>New conversation</span>
+      </button>
 
-      <nav class="main-nav" aria-label="Main navigation">
-        <button class="nav-link active" data-page="dashboard">
-          <span class="nav-icon">⌂</span>
-          <span>Dashboard</span>
-        </button>
+      <nav class="sidebar-navigation" aria-label="Main navigation">
 
-        <button class="nav-link" data-page="brain">
-          <span class="nav-icon">✧</span>
-          <span>Joseph Brain</span>
-          <span class="nav-status-dot"></span>
-        </button>
+        <div class="nav-group">
+          <p class="nav-heading">ASSISTANT</p>
 
-        <button class="nav-link" data-page="website-builder">
-          <span class="nav-icon">▣</span>
-          <span>Website Builder</span>
-        </button>
+          <button class="nav-item active" data-page="brain" type="button">
+            <span class="nav-icon">✦</span>
+            <span>Joseph Brain</span>
+            <span class="nav-tag">AI</span>
+          </button>
 
-        <button class="nav-link" data-page="content-creator">
-          <span class="nav-icon">✎</span>
-          <span>Content Creator</span>
-        </button>
-      </nav>
+          <button class="nav-item" data-page="research" type="button">
+            <span class="nav-icon">⌕</span>
+            <span>Research & Search</span>
+          </button>
 
-      <div class="sidebar-label">PERSONAL</div>
+          <button class="nav-item" data-page="voice" type="button">
+            <span class="nav-icon">◉</span>
+            <span>Voice Conversation</span>
+          </button>
+        </div>
 
-      <nav class="main-nav" aria-label="Personal navigation">
-        <button class="nav-link" data-page="projects">
-          <span class="nav-icon">▤</span>
-          <span>My Projects</span>
-        </button>
+        <div class="nav-group">
+          <p class="nav-heading">CREATE</p>
 
-        <button class="nav-link" data-page="history">
-          <span class="nav-icon">◷</span>
-          <span>History</span>
-        </button>
+          <button class="nav-item" data-page="image-studio" type="button">
+            <span class="nav-icon">▧</span>
+            <span>Image Studio</span>
+          </button>
 
-        <button class="nav-link" data-page="settings">
-          <span class="nav-icon">⚙</span>
-          <span>Settings</span>
-        </button>
+          <button class="nav-item" data-page="video-studio" type="button">
+            <span class="nav-icon">▷</span>
+            <span>Video Studio</span>
+          </button>
+
+          <button class="nav-item" data-page="website-builder" type="button">
+            <span class="nav-icon">⌘</span>
+            <span>Website Builder</span>
+          </button>
+
+          <button class="nav-item" data-page="app-builder" type="button">
+            <span class="nav-icon">▣</span>
+            <span>App Builder</span>
+          </button>
+
+          <button class="nav-item" data-page="game-builder" type="button">
+            <span class="nav-icon">◇</span>
+            <span>Game Builder</span>
+          </button>
+
+          <button class="nav-item" data-page="content-studio" type="button">
+            <span class="nav-icon">✎</span>
+            <span>Content Studio</span>
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <p class="nav-heading">WORK</p>
+
+          <button class="nav-item" data-page="remote-work" type="button">
+            <span class="nav-icon">▤</span>
+            <span>Remote Work</span>
+          </button>
+
+          <button class="nav-item" data-page="autopilot" type="button">
+            <span class="nav-icon">✧</span>
+            <span>Autopilot</span>
+          </button>
+
+          <button class="nav-item" data-page="projects" type="button">
+            <span class="nav-icon">▣</span>
+            <span>My Projects</span>
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <p class="nav-heading">PERSONAL</p>
+
+          <button class="nav-item" data-page="history" type="button">
+            <span class="nav-icon">◷</span>
+            <span>History</span>
+          </button>
+
+          <button class="nav-item" data-page="memory" type="button">
+            <span class="nav-icon">◈</span>
+            <span>Memory</span>
+          </button>
+
+          <button class="nav-item" data-page="settings" type="button">
+            <span class="nav-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+        </div>
+
       </nav>
 
       <div class="sidebar-bottom">
-        <div class="sidebar-plan">
-          <div class="plan-icon">✦</div>
-          <div>
-            <strong>Joseph AI V2</strong>
+        <div class="workspace-card">
+          <div class="workspace-avatar">J</div>
+          <div class="workspace-info">
+            <strong>Joseph Workspace</strong>
             <span>Personal workspace</span>
           </div>
+          <span class="workspace-menu">•••</span>
         </div>
-        <p class="sidebar-version">Version 2.0 · Built for creators</p>
+
+        <div class="sidebar-version">
+          <span class="status-dot"></span>
+          Joseph AI V2
+        </div>
       </div>
+
     </aside>
 
-    <!-- MAIN AREA -->
+    <!-- MAIN APPLICATION -->
     <main class="main-area">
 
       <!-- TOP BAR -->
       <header class="topbar">
+
         <div class="topbar-left">
-          <button class="icon-button menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
-          <div>
-            <div class="topbar-heading" id="topbarTitle">Dashboard</div>
-            <div class="topbar-subtitle">Your ideas. Your tools. Your workspace.</div>
+          <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Open menu">
+            ☰
+          </button>
+
+          <div class="breadcrumb">
+            <span class="breadcrumb-brand">Joseph AI</span>
+            <span class="breadcrumb-divider">/</span>
+            <span id="currentPageName">Joseph Brain</span>
           </div>
         </div>
 
         <div class="topbar-right">
-          <div class="connection-pill" id="connectionPill">
-            <span class="connection-dot"></span>
-            <span id="connectionText">Checking connection</span>
+          <div class="connection-status" id="connectionStatus">
+            <span class="status-dot"></span>
+            <span id="connectionText">Ready</span>
           </div>
-          <div class="user-avatar" title="Joseph AI">J</div>
+
+          <button class="icon-button" id="themeButton" type="button" aria-label="Toggle theme" title="Toggle theme">
+            ◐
+          </button>
+
+          <button class="profile-button" id="profileButton" type="button" aria-label="Workspace profile">
+            J
+          </button>
         </div>
+
       </header>
 
       <!-- PAGE CONTENT -->
-      <div class="page-container">
+      <div class="page-container" id="pageContainer">
 
-        <!-- DASHBOARD -->
-        <section class="page-section active" id="page-dashboard">
-          <div class="welcome-section">
-            <div>
-              <span class="eyebrow">WELCOME TO YOUR WORKSPACE</span>
-              <h1>Build something <span class="gradient-text">remarkable.</span></h1>
-              <p>Use Joseph AI to build professional websites and create powerful content.</p>
-            </div>
-            <div class="welcome-decoration">✦</div>
-          </div>
-
-          <div class="dashboard-grid">
-            <button class="feature-card website-feature" data-open-page="website-builder">
-              <div class="feature-top">
-                <div class="feature-icon">▣</div>
-                <span class="feature-arrow">↗</span>
-              </div>
-              <div class="feature-content">
-                <span class="feature-tag">BUILD & CREATE</span>
-                <h2>Website Builder</h2>
-                <p>Create professional websites for businesses, brands, schools, restaurants and clients.</p>
-              </div>
-              <span class="feature-action">Open Website Builder →</span>
-            </button>
-
-            <button class="feature-card content-feature" data-open-page="content-creator">
-              <div class="feature-top">
-                <div class="feature-icon">✎</div>
-                <span class="feature-arrow">↗</span>
-              </div>
-              <div class="feature-content">
-                <span class="feature-tag">CREATE CONTENT</span>
-                <h2>Content Creator</h2>
-                <p>Generate captions, advertisements, articles, social posts and business promotions.</p>
-              </div>
-              <span class="feature-action">Open Content Creator →</span>
-            </button>
-          </div>
-
-          <div class="dashboard-lower-grid">
-            <div class="panel quick-panel">
-              <div class="panel-heading">
-                <div>
-                  <h3>Quick actions</h3>
-                  <p>Choose what you want to work on.</p>
-                </div>
-              </div>
-
-              <div class="quick-actions">
-                <button class="quick-action" data-open-page="brain">
-                  <span class="quick-action-icon">✧</span>
-                  <span><strong>Ask Joseph Brain</strong><small>Ask questions and get assistance</small></span>
-                  <span class="quick-arrow">→</span>
-                </button>
-
-                <button class="quick-action" data-open-page="website-builder">
-                  <span class="quick-action-icon">▣</span>
-                  <span><strong>Build a website</strong><small>Start a new website project</small></span>
-                  <span class="quick-arrow">→</span>
-                </button>
-
-                <button class="quick-action" data-open-page="content-creator">
-                  <span class="quick-action-icon">✎</span>
-                  <span><strong>Create content</strong><small>Prepare content for your audience</small></span>
-                  <span class="quick-arrow">→</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="panel activity-panel">
-              <div class="panel-heading">
-                <div>
-                  <h3>Workspace activity</h3>
-                  <p>Your recent work.</p>
-                </div>
-              </div>
-              <div id="dashboardActivity" class="activity-list">
-                <div class="empty-state compact-empty">
-                  <span class="empty-icon">◷</span>
-                  <p>Your recent activity will appear here.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- JOSEPH BRAIN -->
-        <section class="page-section" id="page-brain">
-          <div class="section-intro">
-            <span class="eyebrow">YOUR AI ASSISTANT</span>
-            <h1>Talk to <span class="gradient-text">Joseph Brain.</span></h1>
-            <p>Ask questions, explore ideas, research topics and get help with your work.</p>
-          </div>
+        <!-- =====================================
+             JOSEPH BRAIN
+        ====================================== -->
+        <section class="page-section active" id="page-brain" data-page-section="brain">
 
           <div class="brain-layout">
-            <div class="brain-chat-panel panel">
-              <div class="brain-chat-header">
-                <div class="brain-identity">
-                  <div class="brain-avatar">✧</div>
-                  <div>
-                    <strong>Joseph Brain</strong>
-                    <span id="brainStatus">Ready to assist</span>
-                  </div>
+
+            <div class="chat-main">
+
+              <div class="chat-topline">
+                <div>
+                  <div class="page-eyebrow">YOUR INTELLIGENT ASSISTANT</div>
+                  <h1>Joseph Brain</h1>
+                  <p class="page-description">
+                    Think, create, research and get real work done with your AI assistant.
+                  </p>
                 </div>
-                <button class="secondary-button small-button" id="clearBrainChat">New chat</button>
+
+                <button class="secondary-button" id="clearBrainChat" type="button">
+                  <span>↻</span> New chat
+                </button>
               </div>
 
+              <!-- CHAT MESSAGES -->
               <div class="chat-messages" id="chatMessages" aria-live="polite">
-                <div class="assistant-message message">
-                  <div class="message-avatar">J</div>
-                  <div class="message-body">
-                    <strong>Joseph Brain</strong>
-                    <p>Hello! I'm Joseph Brain. What would you like us to work on today?</p>
+
+                <div class="welcome-screen" id="brainWelcome">
+
+                  <div class="welcome-symbol">✦</div>
+
+                  <h2>What can I help you with today?</h2>
+
+                  <p>
+                    Ask me anything. Let's think, build, learn and make progress together.
+                  </p>
+
+                  <div class="suggestion-grid">
+
+                    <button class="suggestion-card" type="button" data-prompt="Help me plan and build a professional website for a customer.">
+                      <span class="suggestion-icon">⌘</span>
+                      <strong>Build a website</strong>
+                      <small>Create a professional website for a client.</small>
+                    </button>
+
+                    <button class="suggestion-card" type="button" data-prompt="Give me real online work opportunities I can apply for from Nigeria.">
+                      <span class="suggestion-icon">↗</span>
+                      <strong>Find online work</strong>
+                      <small>Discover real opportunities and next steps.</small>
+                    </button>
+
+                    <button class="suggestion-card" type="button" data-prompt="Help me create an app and explain how to publish it.">
+                      <span class="suggestion-icon">▣</span>
+                      <strong>Create an app</strong>
+                      <small>Plan and develop a real application.</small>
+                    </button>
+
+                    <button class="suggestion-card" type="button" data-prompt="Give me a creative business idea and explain how I can start.">
+                      <span class="suggestion-icon">✧</span>
+                      <strong>Explore an idea</strong>
+                      <small>Get practical ideas and guidance.</small>
+                    </button>
+
                   </div>
                 </div>
+
               </div>
 
-              <form class="brain-input-area" id="brainForm">
-                <label class="sr-only" for="brainInput">Your message</label>
-                <textarea id="brainInput" rows="1" placeholder="Ask Joseph Brain anything..." required></textarea>
-                <button type="submit" class="primary-button send-button" id="sendBrainButton">
-                  <span>Send</span>
-                  <span>➤</span>
-                </button>
-              </form>
-              <div class="brain-feedback" id="brainFeedback">Joseph Brain can make mistakes. Check important information.</div>
-            </div>
-          </div>
-        </section>
+              <!-- CHAT COMPOSER -->
+              <div class="composer-area">
 
-        <!-- WEBSITE BUILDER -->
-        <section class="page-section" id="page-website-builder">
-          <div class="section-intro">
-            <span class="eyebrow">WEBSITE DEVELOPMENT STUDIO</span>
-            <h1>Build your next <span class="gradient-text">website.</span></h1>
-            <p>Describe your project and create a responsive website with real HTML, CSS and JavaScript files.</p>
-          </div>
-
-          <div class="builder-layout">
-
-            <!-- WEBSITE FORM -->
-            <div class="panel builder-form-panel">
-              <div class="panel-heading">
-                <div>
-                  <h3>Website project details</h3>
-                  <p>Tell Joseph AI what you want to build.</p>
-                </div>
-                <span class="step-label">STEP 01</span>
-              </div>
-
-              <form id="websiteForm" class="builder-form">
-                <div class="form-group">
-                  <label for="websiteProjectName">Project name</label>
-                  <input type="text" id="websiteProjectName" placeholder="e.g. Taste Haven Restaurant" required>
+                <div class="attachment-preview" id="attachmentPreview" hidden>
+                  <div class="attachment-list" id="attachmentList"></div>
+                  <button class="icon-button" id="clearAttachments" type="button" aria-label="Remove attachments">×</button>
                 </div>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="websiteBusinessType">Business or website type</label>
-                    <select id="websiteBusinessType" required>
-                      <option value="">Choose a type</option>
-                      <option>Restaurant / Food</option>
-                      <option>Fashion / Clothing Store</option>
-                      <option>Real Estate</option>
-                      <option>Hotel / Hospitality</option>
-                      <option>School / Education</option>
-                      <option>Church / Religious Organization</option>
-                      <option>Business / Corporate</option>
-                      <option>Personal Portfolio</option>
-                      <option>Beauty / Salon</option>
-                      <option>Technology / Software</option>
-                      <option>Online Store</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
+                <form class="chat-composer" id="brainForm">
 
-                  <div class="form-group">
-                    <label for="websiteStyle">Design style</label>
-                    <select id="websiteStyle">
-                      <option value="Modern premium">Modern premium</option>
-                      <option value="Luxury elegant">Luxury elegant</option>
-                      <option value="Minimal clean">Minimal clean</option>
-                      <option value="Creative bold">Creative bold</option>
-                      <option value="Corporate professional">Corporate professional</option>
-                      <option value="Colorful friendly">Colorful friendly</option>
-                      <option value="Futuristic 3D-inspired">Futuristic 3D-inspired</option>
-                    </select>
-                  </div>
-                </div>
+                  <textarea
+                    id="brainInput"
+                    name="message"
+                    rows="1"
+                    placeholder="Message Joseph AI..."
+                    aria-label="Message Joseph AI"
+                  ></textarea>
 
-                <div class="form-group">
-                  <label for="websiteDescription">Describe the website</label>
-                  <textarea id="websiteDescription" rows="5" placeholder="Explain the business, its customers, what the website should communicate and what visitors should be able to do..." required></textarea>
-                </div>
+                  <div class="composer-toolbar">
 
-                <div class="form-group">
-                  <label for="websiteFeatures">Features you want</label>
-                  <textarea id="websiteFeatures" rows="3" placeholder="e.g. Home page, About, Services, Gallery, Contact, WhatsApp button, menu..."></textarea>
-                </div>
+                    <div class="composer-tools">
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="websitePalette">Color palette</label>
-                    <select id="websitePalette">
-                      <option value="Black and gold">Black and gold</option>
-                      <option value="Navy and cyan">Navy and cyan</option>
-                      <option value="White and blue">White and blue</option>
-                      <option value="Black and white">Black and white</option>
-                      <option value="Green and cream">Green and cream</option>
-                      <option value="Purple and pink">Purple and pink</option>
-                      <option value="Choose colors that suit the business">Choose suitable colors</option>
-                    </select>
-                  </div>
+                      <button class="composer-tool" id="attachFileButton" type="button" title="Upload images or files">
+                        <span>＋</span>
+                        <span>Attach</span>
+                      </button>
 
-                  <div class="form-group">
-                    <label for="websiteSize">Website size</label>
-                    <select id="websiteSize">
-                      <option value="Multi-page style single-page website">Full landing page</option>
-                      <option value="Compact one-page website">Simple one-page website</option>
-                      <option value="Detailed multi-section website">Detailed business website</option>
-                    </select>
-                  </div>
-                </div>
+                      <button class="composer-tool" id="brainImageButton" type="button" title="Upload an image">
+                        <span>▧</span>
+                        <span>Image</span>
+                      </button>
 
-                <div class="form-group">
-                  <label for="websiteExtra">Extra instructions <span class="optional-label">Optional</span></label>
-                  <textarea id="websiteExtra" rows="3" placeholder="Add brand details, preferred layout, contact information or other instructions..."></textarea>
-                </div>
+                      <button class="composer-tool" id="brainVoiceButton" type="button" title="Speak to Joseph AI">
+                        <span>◉</span>
+                        <span>Voice</span>
+                      </button>
 
-                <button type="submit" class="primary-button generate-button" id="generateWebsiteButton">
-                  <span>✦</span>
-                  <span>Generate my website</span>
-                  <span class="button-arrow">→</span>
-                </button>
-
-                <div class="form-feedback" id="websiteFeedback" aria-live="polite"></div>
-              </form>
-            </div>
-
-            <!-- WEBSITE PREVIEW AND FILES -->
-            <div class="builder-output">
-
-              <div class="panel preview-panel">
-                <div class="panel-heading preview-heading">
-                  <div>
-                    <h3>Live website preview</h3>
-                    <p>See the website generated by Joseph AI.</p>
-                  </div>
-                  <div class="preview-controls">
-                    <button class="device-button active" id="desktopPreviewButton" type="button" aria-label="Desktop preview">▰</button>
-                    <button class="device-button" id="mobilePreviewButton" type="button" aria-label="Mobile preview">▯</button>
-                  </div>
-                </div>
-
-                <div class="preview-browser">
-                  <div class="browser-toolbar">
-                    <div class="browser-dots"><i></i><i></i><i></i></div>
-                    <div class="browser-address">Your website preview</div>
-                    <span class="browser-menu">•••</span>
-                  </div>
-
-                  <div class="preview-stage" id="previewStage">
-                    <div class="preview-placeholder" id="previewPlaceholder">
-                      <div class="placeholder-icon">▣</div>
-                      <h3>Your website will appear here</h3>
-                      <p>Complete the project details and generate your first website.</p>
                     </div>
-                    <iframe
-                      id="websitePreview"
-                      title="Generated website preview"
-                      sandbox="allow-scripts allow-forms"
-                      loading="lazy"
-                      hidden>
-                    </iframe>
+
+                    <div class="composer-actions">
+
+                      <button class="icon-button stop-speaking-button" id="stopSpeakingButton" type="button" title="Stop speaking" hidden>
+                        ■
+                      </button>
+
+                      <button class="send-button" id="sendBrainButton" type="submit" aria-label="Send message">
+                        ↑
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </form>
+
+                <input
+                  type="file"
+                  id="brainFileInput"
+                  accept="image/*,.pdf,.txt,.doc,.docx,.csv"
+                  multiple
+                  hidden
+                >
+
+                <input
+                  type="file"
+                  id="brainImageInput"
+                  accept="image/*"
+                  multiple
+                  hidden
+                >
+
+                <p class="composer-disclaimer">
+                  Joseph AI can make mistakes. Check important information before acting.
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- RIGHT SIDE ASSISTANT PANEL -->
+            <aside class="brain-side-panel">
+
+              <div class="side-panel-card">
+                <div class="side-panel-heading">
+                  <span class="side-panel-icon">✦</span>
+                  <h3>What I can do</h3>
+                </div>
+
+                <div class="capability-list">
+                  <div class="capability-item">
+                    <span>⌕</span>
+                    <div>
+                      <strong>Research</strong>
+                      <small>Find and explain information.</small>
+                    </div>
+                  </div>
+
+                  <div class="capability-item">
+                    <span>▧</span>
+                    <div>
+                      <strong>Create</strong>
+                      <small>Build images, content and media.</small>
+                    </div>
+                  </div>
+
+                  <div class="capability-item">
+                    <span>⌘</span>
+                    <div>
+                      <strong>Develop</strong>
+                      <small>Build websites, apps and games.</small>
+                    </div>
+                  </div>
+
+                  <div class="capability-item">
+                    <span>↗</span>
+                    <div>
+                      <strong>Work</strong>
+                      <small>Plan tasks and find opportunities.</small>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="panel code-panel">
-                <div class="panel-heading">
-                  <div>
-                    <h3>Website source files</h3>
-                    <p>Your generated website code.</p>
-                  </div>
-                  <span class="file-status" id="websiteFileStatus">No files yet</span>
+              <div class="side-panel-card">
+                <div class="side-panel-heading">
+                  <span class="side-panel-icon">◈</span>
+                  <h3>Quick tools</h3>
                 </div>
 
-                <div class="code-tabs" role="tablist" aria-label="Website source files">
-                  <button class="code-tab active" type="button" data-code-tab="html">index.html</button>
-                  <button class="code-tab" type="button" data-code-tab="css">style.css</button>
-                  <button class="code-tab" type="button" data-code-tab="js">script.js</button>
-                </div>
+                <button class="quick-tool-button" data-open-page="image-studio" type="button">
+                  <span>▧</span> Create an image <span>→</span>
+                </button>
 
-                <pre class="code-viewer"><code id="websiteCodeOutput">Your generated source code will appear here.</code></pre>
+                <button class="quick-tool-button" data-open-page="website-builder" type="button">
+                  <span>⌘</span> Build a website <span>→</span>
+                </button>
 
-                <div class="file-actions">
-                  <button class="secondary-button" id="copyWebsiteFile" type="button">Copy current file</button>
-                  <button class="secondary-button" id="downloadWebsiteFile" type="button">Download current file</button>
-                  <button class="primary-button" id="downloadAllWebsiteFiles" type="button">Download all files ↓</button>
-                </div>
+                <button class="quick-tool-button" data-open-page="app-builder" type="button">
+                  <span>▣</span> Build an app <span>→</span>
+                </button>
+
               </div>
 
-            </div>
+              <div class="side-panel-card memory-status-card">
+                <div class="side-panel-heading">
+                  <span class="side-panel-icon">◈</span>
+                  <h3>Memory</h3>
+                </div>
+                <p>Memory features will help Joseph AI use relevant saved context in future conversations.</p>
+                <button class="text-button" data-open-page="memory" type="button">Manage memory →</button>
+              </div>
+
+            </aside>
+
           </div>
 
-          <!-- SAVED WEBSITE PROJECTS -->
-          <div class="panel saved-projects-panel">
-            <div class="panel-heading">
-              <div>
-                <h3>Saved website projects</h3>
-                <p>Projects saved in this browser on this device.</p>
-              </div>
-              <span class="saved-count" id="websiteSavedCount">0 projects</span>
-            </div>
-            <div class="saved-project-list" id="savedWebsiteProjects">
-              <div class="empty-state">
-                <span class="empty-icon">▤</span>
-                <p>Your saved website projects will appear here.</p>
-              </div>
-            </div>
-          </div>
         </section>
 
-        <!-- CONTENT CREATOR -->
-        <section class="page-section" id="page-content-creator">
-          <div class="section-intro">
-            <span class="eyebrow">AI CONTENT STUDIO</span>
-            <h1>Turn ideas into <span class="gradient-text">great content.</span></h1>
-            <p>Create useful, engaging content for businesses, brands, social media and your audience.</p>
+        <!-- =====================================
+             RESEARCH AND SEARCH
+        ====================================== -->
+        <section class="page-section" id="page-research" data-page-section="research">
+
+          <div class="section-header">
+            <div class="page-eyebrow">DISCOVER AND LEARN</div>
+            <h1>Research & Search</h1>
+            <p>Research topics, explore ideas and find information from the internet.</p>
           </div>
 
-          <div class="content-layout">
+          <div class="workspace-card-large">
 
-            <!-- CONTENT FORM -->
-            <div class="panel content-form-panel">
-              <div class="panel-heading">
-                <div>
-                  <h3>Content details</h3>
-                  <p>Tell Joseph AI what to create.</p>
+            <form id="researchForm" class="tool-form">
+              <label for="researchQuery">What do you want to research?</label>
+              <textarea id="researchQuery" rows="4" placeholder="Enter a topic, question, business idea or research task..."></textarea>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="researchDepth">Research depth</label>
+                  <select id="researchDepth">
+                    <option value="quick">Quick research</option>
+                    <option value="detailed" selected>Detailed research</option>
+                    <option value="comprehensive">Comprehensive research</option>
+                  </select>
                 </div>
-                <span class="step-label">STEP 01</span>
+
+                <div class="form-field">
+                  <label for="researchType">Research type</label>
+                  <select id="researchType">
+                    <option value="general">General information</option>
+                    <option value="business">Business research</option>
+                    <option value="technology">Technology</option>
+                    <option value="jobs">Jobs and opportunities</option>
+                    <option value="education">Education</option>
+                  </select>
+                </div>
               </div>
 
-              <form id="contentForm" class="builder-form">
+              <button class="primary-button" id="researchButton" type="submit">
+                Search and research
+              </button>
+            </form>
 
-                <div class="form-group">
-                  <label for="contentType">What do you want to create?</label>
-                  <select id="contentType" required>
-                    <option value="">Choose content type</option>
-                    <option value="Social media post">Social media post</option>
-                    <option value="Social media caption">Social media caption</option>
-                    <option value="Business advertisement">Business advertisement</option>
-                    <option value="Product description">Product description</option>
-                    <option value="Promotional message">Promotional message</option>
-                    <option value="Blog article">Blog article</option>
-                    <option value="Website content">Website content</option>
-                    <option value="YouTube video script">YouTube video script</option>
-                    <option value="Video advertisement script">Video advertisement script</option>
-                    <option value="Business bio">Business bio</option>
-                    <option value="Email">Professional email</option>
-                    <option value="Marketing campaign">Marketing campaign</option>
-                    <option value="Other">Other content</option>
-                  </select>
+            <div class="tool-result" id="researchResult" aria-live="polite">
+              <div class="empty-state">
+                <span>⌕</span>
+                <h3>Your research will appear here</h3>
+                <p>Results should include useful information and source links when available.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             VOICE CONVERSATION
+        ====================================== -->
+        <section class="page-section" id="page-voice" data-page-section="voice">
+
+          <div class="section-header centered-header">
+            <div class="page-eyebrow">TALK WITH YOUR AI</div>
+            <h1>Voice Conversation</h1>
+            <p>Talk naturally with Joseph AI and listen to its responses.</p>
+          </div>
+
+          <div class="voice-workspace">
+
+            <div class="voice-status" id="voiceStatus">
+              Ready to start a conversation
+            </div>
+
+            <div class="voice-orb" id="voiceOrb">
+              <span>✦</span>
+            </div>
+
+            <h2 id="voiceStateTitle">Hello, how can I help?</h2>
+            <p id="voiceStateDescription">Press the microphone to start speaking.</p>
+
+            <div class="voice-controls">
+
+              <button class="voice-control-button" id="voiceStartButton" type="button">
+                <span>◉</span>
+                Start speaking
+              </button>
+
+              <button class="voice-control-button secondary-button" id="voiceStopButton" type="button">
+                Stop
+              </button>
+
+            </div>
+
+            <div class="voice-transcript" id="voiceTranscript">
+              <p class="muted-text">Your conversation transcript will appear here.</p>
+            </div>
+
+            <div class="voice-settings">
+              <label for="voiceLanguage">Language</label>
+              <select id="voiceLanguage">
+                <option value="en-US">English</option>
+                <option value="en-GB">English (UK)</option>
+              </select>
+
+              <label class="toggle-label">
+                <input type="checkbox" id="voiceAutoSpeak" checked>
+                Speak responses aloud
+              </label>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =====================================
+             IMAGE STUDIO
+        ====================================== -->
+        <section class="page-section" id="page-image-studio" data-page-section="image-studio">
+
+          <div class="section-header">
+            <div class="page-eyebrow">AI CREATIVE WORKSPACE</div>
+            <h1>Image Studio</h1>
+            <p>Create, recreate and edit images with AI-powered tools.</p>
+          </div>
+
+          <div class="studio-grid">
+
+            <div class="workspace-card-large">
+
+              <form id="imageForm" class="tool-form">
+
+                <label for="imagePrompt">Describe the image you want</label>
+                <textarea id="imagePrompt" rows="5" placeholder="Describe your image, subject, background, style, lighting and details..."></textarea>
+
+                <label for="imageMode">What would you like to do?</label>
+                <select id="imageMode">
+                  <option value="generate">Generate a new image</option>
+                  <option value="edit">Edit an uploaded image</option>
+                  <option value="recreate">Recreate an uploaded image</option>
+                  <option value="variation">Create image variations</option>
+                </select>
+
+                <label for="imageStyle">Visual style</label>
+                <select id="imageStyle">
+                  <option value="realistic">Photorealistic</option>
+                  <option value="cinematic">Cinematic</option>
+                  <option value="3d">3D render</option>
+                  <option value="illustration">Illustration</option>
+                  <option value="anime">Anime</option>
+                  <option value="professional">Professional commercial</option>
+                  <option value="custom">Custom style</option>
+                </select>
+
+                <div class="upload-dropzone" id="imageUploadZone">
+                  <span class="upload-icon">▧</span>
+                  <strong>Upload a reference image</strong>
+                  <p>Choose an image to edit, recreate or use as a reference.</p>
+                  <button class="secondary-button" id="imageUploadButton" type="button">Choose image</button>
+                  <input type="file" id="imageReferenceInput" accept="image/*" multiple hidden>
+                </div>
+
+                <div class="reference-preview" id="imageReferencePreview"></div>
+
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="imageAspect">Image dimensions</label>
+                    <select id="imageAspect">
+                      <option value="1:1">Square</option>
+                      <option value="16:9">Landscape</option>
+                      <option value="9:16">Portrait</option>
+                      <option value="4:5">Social portrait</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="imageModel">AI model</label>
+                    <select id="imageModel">
+                      <option value="auto">Automatic selection</option>
+                      <option value="provider-1">Available image provider</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button class="primary-button" id="generateImageButton" type="submit">
+                  Generate image
+                </button>
+
+                <p class="form-note" id="imageFeedback">Image generation requires a connected image-generation service.</p>
+
+              </form>
+
+            </div>
+
+            <div class="workspace-card-large image-output-panel">
+              <div class="panel-heading">
+                <h3>Image result</h3>
+                <span class="status-label" id="imageStatus">Waiting</span>
+              </div>
+
+              <div class="image-output" id="imageOutput">
+                <div class="empty-state">
+                  <span>▧</span>
+                  <h3>Your image will appear here</h3>
+                  <p>Generated or edited results will be displayed here.</p>
+                </div>
+              </div>
+
+              <div class="result-actions" id="imageResultActions">
+                <button class="secondary-button" id="downloadImageButton" type="button" disabled>Download</button>
+                <button class="secondary-button" id="saveImageButton" type="button" disabled>Save to library</button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             VIDEO STUDIO
+        ====================================== -->
+        <section class="page-section" id="page-video-studio" data-page-section="video-studio">
+
+          <div class="section-header">
+            <div class="page-eyebrow">AI VIDEO PRODUCTION</div>
+            <h1>Video Studio</h1>
+            <p>Plan videos, create scenes and turn supported images or scripts into video.</p>
+          </div>
+
+          <div class="studio-grid">
+
+            <div class="workspace-card-large">
+              <form id="videoForm" class="tool-form">
+
+                <label for="videoPrompt">Describe your video</label>
+                <textarea id="videoPrompt" rows="5" placeholder="Describe the story, characters, action, setting and video you want to create..."></textarea>
+
+                <label for="videoMode">Video workflow</label>
+                <select id="videoMode">
+                  <option value="script">Create a video script</option>
+                  <option value="storyboard">Create a scene-by-scene storyboard</option>
+                  <option value="image-to-video">Turn an image into video</option>
+                  <option value="text-to-video">Generate video from text</option>
+                </select>
+
+                <div class="upload-dropzone">
+                  <span class="upload-icon">▷</span>
+                  <strong>Add a reference image</strong>
+                  <p>Upload an image when using an image-based video workflow.</p>
+                  <button class="secondary-button" id="videoUploadButton" type="button">Choose image</button>
+                  <input type="file" id="videoReferenceInput" accept="image/*" hidden>
                 </div>
 
                 <div class="form-row">
-                  <div class="form-group">
-                    <label for="contentPlatform">Platform</label>
-                    <select id="contentPlatform">
-                      <option value="General">General / Any platform</option>
-                      <option value="Facebook">Facebook</option>
-                      <option value="Instagram">Instagram</option>
-                      <option value="TikTok">TikTok</option>
-                      <option value="YouTube">YouTube</option>
-                      <option value="WhatsApp">WhatsApp</option>
-                      <option value="LinkedIn">LinkedIn</option>
-                      <option value="Website or blog">Website / Blog</option>
-                      <option value="Email">Email</option>
+                  <div class="form-field">
+                    <label for="videoLength">Video duration</label>
+                    <select id="videoLength">
+                      <option value="short">Short</option>
+                      <option value="30">30 seconds</option>
+                      <option value="60">60 seconds</option>
+                      <option value="120">2 minutes</option>
                     </select>
                   </div>
 
-                  <div class="form-group">
-                    <label for="contentTone">Writing tone</label>
-                    <select id="contentTone">
-                      <option value="Professional">Professional</option>
-                      <option value="Friendly and conversational">Friendly</option>
-                      <option value="Persuasive and sales-focused">Persuasive</option>
-                      <option value="Luxury and elegant">Luxury</option>
-                      <option value="Creative and energetic">Creative</option>
-                      <option value="Educational">Educational</option>
-                      <option value="Funny and entertaining">Funny</option>
-                      <option value="Inspirational">Inspirational</option>
+                  <div class="form-field">
+                    <label for="videoAspect">Format</label>
+                    <select id="videoAspect">
+                      <option value="16:9">Landscape</option>
+                      <option value="9:16">Vertical</option>
+                      <option value="1:1">Square</option>
                     </select>
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="contentSubject">What is the content about?</label>
-                  <textarea id="contentSubject" rows="4" placeholder="Describe the topic, business, product, service or message you want to communicate..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="contentAudience">Who is your target audience?</label>
-                  <input type="text" id="contentAudience" placeholder="e.g. Young adults, restaurant customers, business owners...">
-                </div>
-
-                <div class="form-group">
-                  <label for="contentGoal">What should this content achieve?</label>
-                  <select id="contentGoal">
-                    <option value="Inform and educate">Inform and educate</option>
-                    <option value="Promote a product or service">Promote a product or service</option>
-                    <option value="Attract new customers">Attract new customers</option>
-                    <option value="Increase engagement">Increase engagement</option>
-                    <option value="Build brand awareness">Build brand awareness</option>
-                    <option value="Encourage people to take action">Encourage people to take action</option>
-                    <option value="Entertain the audience">Entertain the audience</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="contentLength">Content length</label>
-                  <select id="contentLength">
-                    <option value="Short and concise">Short</option>
-                    <option value="Medium length">Medium</option>
-                    <option value="Detailed and comprehensive">Long / Detailed</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="contentExtra">Additional instructions <span class="optional-label">Optional</span></label>
-                  <textarea id="contentExtra" rows="3" placeholder="Brand name, preferred keywords, call to action, hashtags or other instructions..."></textarea>
-                </div>
-
-                <button type="submit" class="primary-button generate-button" id="generateContentButton">
-                  <span>✦</span>
-                  <span>Generate content</span>
-                  <span class="button-arrow">→</span>
+                <button class="primary-button" id="generateVideoButton" type="submit">
+                  Create video plan
                 </button>
 
-                <div class="form-feedback" id="contentFeedback" aria-live="polite"></div>
+                <p class="form-note" id="videoFeedback">
+                  Script and storyboard tools can be built separately from actual video rendering.
+                </p>
+
               </form>
             </div>
 
-            <!-- CONTENT RESULT -->
-            <div class="panel content-result-panel">
+            <div class="workspace-card-large">
               <div class="panel-heading">
-                <div>
-                  <h3>Your generated content</h3>
-                  <p>Your result will appear here.</p>
-                </div>
-                <span class="result-indicator" id="contentResultStatus">Waiting for input</span>
+                <h3>Video workspace</h3>
+                <span class="status-label" id="videoStatus">Waiting</span>
               </div>
 
-              <div class="content-result-area">
-                <div class="content-placeholder" id="contentPlaceholder">
-                  <div class="placeholder-icon">✎</div>
-                  <h3>Your next great idea starts here.</h3>
-                  <p>Complete the form and let Joseph AI create your content.</p>
-                </div>
-
-                <div class="content-output" id="contentOutput" hidden>
-                  <div class="generated-content-text" id="generatedContentText"></div>
+              <div class="video-output" id="videoOutput">
+                <div class="empty-state">
+                  <span>▷</span>
+                  <h3>Your video project starts here</h3>
+                  <p>Scripts, storyboards and generated video results will appear here.</p>
                 </div>
               </div>
 
-              <div class="content-result-actions">
-                <button class="secondary-button" id="copyGeneratedContent" type="button" disabled>Copy content</button>
-                <button class="secondary-button" id="downloadGeneratedContent" type="button" disabled>Download text</button>
-                <button class="primary-button" id="regenerateContent" type="button" disabled>Regenerate ↻</button>
-              </div>
+              <div class="scene-list" id="videoSceneList"></div>
             </div>
+
           </div>
 
-          <!-- CONTENT HISTORY -->
-          <div class="panel content-history-panel">
-            <div class="panel-heading">
-              <div>
-                <h3>Recent content</h3>
-                <p>Your content saved in this browser.</p>
-              </div>
-              <span class="saved-count" id="contentSavedCount">0 items</span>
-            </div>
-            <div class="content-history-list" id="contentHistoryList">
-              <div class="empty-state">
-                <span class="empty-icon">✎</span>
-                <p>Your generated content history will appear here.</p>
-              </div>
-            </div>
-          </div>
         </section>
 
-        <!-- MY PROJECTS -->
-        <section class="page-section" id="page-projects">
-          <div class="section-intro">
-            <span class="eyebrow">YOUR WORK</span>
-            <h1>My <span class="gradient-text">Projects.</span></h1>
-            <p>Keep track of your website and content projects.</p>
-          </div>
-          <div class="panel">
-            <div class="panel-heading">
-              <div>
-                <h3>Your saved work</h3>
-                <p>Saved projects are stored locally on this device.</p>
-              </div>
-            </div>
-            <div id="allProjectsList" class="saved-project-list">
-              <div class="empty-state">
-                <span class="empty-icon">▤</span>
-                <p>Your projects will appear here.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- HISTORY -->
-        <section class="page-section" id="page-history">
-          <div class="section-intro">
-            <span class="eyebrow">YOUR ACTIVITY</span>
-            <h1>Work <span class="gradient-text">History.</span></h1>
-            <p>Review your recent activity in Joseph AI.</p>
-          </div>
-          <div class="panel">
-            <div class="panel-heading">
-              <div>
-                <h3>Recent activity</h3>
-                <p>Your recent work on this device.</p>
-              </div>
-            </div>
-            <div id="fullActivityList" class="activity-list">
-              <div class="empty-state">
-                <span class="empty-icon">◷</span>
-                <p>Your activity will appear here.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SETTINGS -->
-        <section class="page-section" id="page-settings">
-          <div class="section-intro">
-            <span class="eyebrow">PREFERENCES</span>
-            <h1>Workspace <span class="gradient-text">Settings.</span></h1>
-            <p>View your workspace information and preferences.</p>
-          </div>
-
-          <div class="panel settings-panel">
-            <div class="panel-heading">
-              <div>
-                <h3>Joseph AI V2</h3>
-                <p>Your personal AI workspace.</p>
-              </div>
-            </div>
-            <div class="settings-row">
-              <div><strong>Application</strong><span>Joseph AI V2</span></div>
-              <span class="settings-value">Version 2.0</span>
-            </div>
-            <div class="settings-row">
-              <div><strong>Website generation</strong><span>Uses your configured AI API</span></div>
-              <span class="settings-value">API required</span>
-            </div>
-            <div class="settings-row">
-              <div><strong>Content generation</strong><span>Uses your configured AI API</span></div>
-              <span class="settings-value">API required</span>
-            </div>
-            <div class="settings-row">
-              <div><strong>Local project storage</strong><span>Projects saved in this browser</span></div>
-              <span class="settings-value">This device</span>
-            </div>
-          </div>
-        </section>
-
-      </div>
-
-      <footer class="app-footer">
-        <span>JOSEPH AI V2</span>
-        <span>Build ideas. Create opportunities.</span>
-      </footer>
-    </main>
-  </div>
-
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
-</body>
-</html>
+        <!-- =====================================
+             WEBSITE BUILDER
+       
