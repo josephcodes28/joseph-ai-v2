@@ -1081,3 +1081,132 @@ function initializeContentCreator() {
 
   renderContentHistory();
 }
+/* ==========================================
+   PROJECTS
+   ========================================== */
+
+function renderAllProjects() {
+  const container = $("#allProjectsList");
+  if (!container) return;
+
+  const websites = getStorage(JosephAI.storage.websites);
+  const contents = getStorage(JosephAI.storage.content);
+
+  const combined = [
+    ...websites.map(item => ({
+      id: item.id,
+      name: item.name,
+      type: "Website",
+      date: item.createdAt
+    })),
+    ...contents.map(item => ({
+      id: item.id,
+      name: item.type + ": " + item.subject,
+      type: "Content",
+      date: item.createdAt
+    }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (!combined.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">▤</span>
+        <p>Your projects will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = combined.map(item => `
+    <div class="saved-project-item">
+      <div class="project-item-icon">${item.type === "Website" ? "▣" : "✎"}</div>
+      <div class="project-item-info">
+        <strong>${escapeHTML(item.name)}</strong>
+        <span>${escapeHTML(item.type)} · ${escapeHTML(formatDate(item.date))}</span>
+      </div>
+      <span class="file-status">${escapeHTML(item.type)}</span>
+    </div>
+  `).join("");
+}
+
+/* ==========================================
+   ACTIVITY
+   ========================================== */
+
+function renderActivity(selector = "#dashboardActivity") {
+  const container = $(selector);
+  if (!container) return;
+
+  const activities = getStorage(JosephAI.storage.activity);
+
+  if (!activities.length) {
+    container.innerHTML = `
+      <div class="empty-state compact-empty">
+        <span class="empty-icon">◷</span>
+        <p>Your recent activity will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = activities.map(item => `
+    <div class="activity-item">
+      <div class="project-item-icon">${item.category === "Website" ? "▣" : "✎"}</div>
+      <div class="activity-info">
+        <strong>${escapeHTML(item.title)}</strong>
+        <span>${escapeHTML(item.category)} · ${escapeHTML(formatDate(item.date))}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ==========================================
+   CONNECTION INDICATOR
+   ========================================== */
+
+function initializeConnectionIndicator() {
+  $("#connectionText").textContent = navigator.onLine
+    ? "Online"
+    : "Offline";
+
+  $(".connection-dot").style.background = navigator.onLine
+    ? "var(--green)"
+    : "var(--danger)";
+
+  window.addEventListener("online", () => {
+    $("#connectionText").textContent = "Online";
+    $(".connection-dot").style.background = "var(--green)";
+  });
+
+  window.addEventListener("offline", () => {
+    $("#connectionText").textContent = "Offline";
+    $(".connection-dot").style.background = "var(--danger)";
+  });
+}
+
+/* ==========================================
+   APPLICATION STARTUP
+   ========================================== */
+
+function initializeJosephAI() {
+  console.log("Joseph AI V2 starting...");
+
+  initializeNavigation();
+  initializeSidebar();
+  initializeConnectionIndicator();
+
+  initializeBrain();
+  initializeWebsiteBuilder();
+  initializeContentCreator();
+
+  renderActivity();
+  renderAllProjects();
+
+  console.log("Joseph AI V2 frontend initialized.");
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeJosephAI);
+} else {
+  initializeJosephAI();
+}
