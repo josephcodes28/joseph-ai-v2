@@ -1,1212 +1,1203 @@
 
 "use strict";
 
-/* ==========================================
+/* =========================================================
    JOSEPH AI V2
    MAIN FRONTEND CONTROLLER
-   ========================================== */
+   File: script.js
 
-const JosephAI = {
-  version: "2.0",
+   Frontend features:
+   - Navigation and responsive sidebar
+   - AI conversations and local history
+   - File and image attachments
+   - Browser speech recognition and speech synthesis
+   - Research, website, app, game and content workflows
+   - Website preview, code tabs and downloads
+   - Local projects, memory and settings
+   - Remote work and Autopilot interface
+   - Export and local data management
 
-  storage: {
-    websites: "JOSEPH_V2_WEBSITE_PROJECTS",
-    content: "JOSEPH_V2_CONTENT_HISTORY",
-    activity: "JOSEPH_V2_ACTIVITY",
-    brain: "JOSEPH_CONVERSATION_V2"
-  },
+   Backend endpoints are connected separately.
+   ========================================================= */
 
-  websiteFiles: {
-    html: "",
-    css: "",
-    js: ""
-  },
+const JosephAI = (() => {
+  "use strict";
 
-  currentWebsiteProject: null,
-  currentCodeTab: "html",
-  currentContent: "",
-  lastContentRequest: null
-};
+  const CONFIG = {
+    api: {
+      chat: "/api/chat",
+      website: "/api/website",
+      content: "/api/content",
+      jobs: "/api/jobs",
+      image: "/api/image",
+      video: "/api/video",
+      app: "/api/app",
+      game: "/api/game"
+    },
 
-/* ==========================================
-   GENERAL HELPERS
-   ========================================== */
+    storage: {
+      conversations: "JOSEPH_V2_CONVERSATIONS",
+      activeConversation: "JOSEPH_V2_ACTIVE_CONVERSATION",
+      projects: "JOSEPH_V2_PROJECTS",
+      websites: "JOSEPH_V2_WEBSITES",
+      content: "JOSEPH_V2_CONTENT",
+      activity: "JOSEPH_V2_ACTIVITY",
+      memory: "JOSEPH_V2_MEMORY",
+      settings: "JOSEPH_V2_SETTINGS",
+      applications: "JOSEPH_V2_APPLICATIONS",
+      attachments: "JOSEPH_V2_ATTACHMENTS"
+    },
 
-function $(selector) {
-  return document.querySelector(selector);
-}
+    maxAttachmentSize: 8 * 1024 * 1024,
+    maxAttachments: 5,
+    requestTimeout: 90000
+  };
 
-function $all(selector) {
-  return Array.from(document.querySelectorAll(selector));
-}
+  const state = {
+    currentPage: "brain",
+    activeConversationId: null,
+    conversations: [],
+    messages: [],
+    attachments: [],
+    websites: [],
+    projects: [],
+    contentHistory: [],
+    activity: [],
+    memory: [],
+    applications: [],
+    currentWebsite: null,
+    currentContent: "",
+    currentImage: null,
+    currentApp: null,
+    currentGame: null,
+    currentVideo: null,
+    currentCodeTab: "html",
+    lastContentRequest: null,
+    lastJobResults: [],
+    recognition: null,
+    isListening: false,
+    isSending: false,
+    speechEnabled: false,
+    speechLanguage: "en-US",
+    compactMode: false
+  };
 
-function getStorage(key, fallback = []) {
-  try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  } catch (error) {
-    console.error("Storage reading error:", error);
-    return fallback;
-  }
-}
+  const pageNames = {
+    brain: "Joseph Brain",
+    research: "Research & Search",
+    voice: "Voice Conversation",
+    "image-studio": "Image Studio",
+    "video-studio": "Video Studio",
+    "website-builder": "Website Builder",
+    "app-builder": "App Builder",
+    "game-builder": "Game Builder",
+    "content-studio": "Content Studio",
+    "remote-work": "Remote Work",
+    autopilot: "Autopilot",
+    projects: "My Projects",
+    history: "History",
+    memory: "Memory",
+    settings: "Settings"
+  };
 
-function setStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch (error) {
-    console.error("Storage saving error:", error);
-    showToast("Could not save. Your browser storage may be full.", "error");
-    return false;
-  }
-}
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) =>
+    Array.from(root.querySelectorAll(selector));
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, character => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  })[character]);
-}
+  const byId = id => document.getElementById(id);
 
-function showToast(message, type = "") {
-  const container = $("#toastContainer");
-  if (!container) return;
-
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.textContent = message;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 3500);
-}
-
-function setFeedback(selector, message, type = "") {
-  const element = $(selector);
-  if (!element) return;
-
-  element.textContent = message;
-  element.className = "form-feedback";
-
-  if (type) {
-    element.classList.add(type);
-  }
-}
-
-function setButtonLoading(button, loading, loadingText = "Please wait...") {
-  if (!button) return;
-
-  if (loading) {
-    if (!button.dataset.originalContent) {
-      button.dataset.originalContent = button.innerHTML;
-    }
-
-    button.disabled = true;
-    button.textContent = loadingText;
-  } else {
-    button.disabled = false;
-
-    if (button.dataset.originalContent) {
-      button.innerHTML = button.dataset.originalContent;
-      delete button.dataset.originalContent;
-    }
-  }
-}
-
-async function copyText(text) {
-  if (!text) {
-    showToast("There is nothing to copy.", "error");
-    return false;
-  }
-
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.select();
-
-      const copied = document.execCommand("copy");
-      textarea.remove();
-
-      if (!copied) throw new Error("Copy failed");
-    }
-
-    showToast("Copied successfully.", "success");
-    return true;
-  } catch (error) {
-    console.error(error);
-    showToast("Copy failed. Please try again.", "error");
-    return false;
-  }
-}
-
-function downloadText(filename, content, type = "text/plain") {
-  if (!content) {
-    showToast("There is no file to download.", "error");
-    return;
-  }
-
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
-
-function createId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function recordActivity(title, category) {
-  const activities = getStorage(JosephAI.storage.activity);
-
-  activities.unshift({
-    id: createId(),
-    title,
-    category,
-    date: new Date().toISOString()
-  });
-
-  setStorage(JosephAI.storage.activity, activities.slice(0, 30));
-
-  renderActivity();
-}
-
-function formatDate(dateValue) {
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Date unavailable";
-  }
-
-  return date.toLocaleString();
-}
-
-/* ==========================================
-   NAVIGATION
-   ========================================== */
-
-function navigateTo(pageName, updateHistory = true) {
-  const page = $(`#page-${pageName}`);
-
-  if (!page) {
-    console.warn("Page not found:", pageName);
-    return;
-  }
-
-  $all(".page-section").forEach(section => {
-    section.classList.remove("active");
-  });
-
-  page.classList.add("active");
-
-  $all(".nav-link").forEach(link => {
-    link.classList.toggle(
-      "active",
-      link.dataset.page === pageName
+  function makeId() {
+    return (
+      Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 9)
     );
-  });
-
-  const activeLink = $(`.nav-link[data-page="${pageName}"]`);
-  const title = activeLink
-    ? activeLink.querySelector("span:nth-child(2)")?.textContent
-    : pageName;
-
-  $("#topbarTitle").textContent = title || "Joseph AI";
-
-  closeSidebar();
-
-  if (updateHistory) {
-    history.pushState({ page: pageName }, "", `#${pageName}`);
   }
 
-  if (pageName === "projects") {
-    renderAllProjects();
+  function safeRead(key, fallback) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+      console.warn("Could not read local data:", key, error);
+      return fallback;
+    }
   }
 
-  if (pageName === "history") {
-    renderActivity("#fullActivityList");
+  function safeWrite(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error("Could not save local data:", error);
+      showToast(
+        "Storage is full or unavailable. Some data could not be saved.",
+        "error"
+      );
+      return false;
+    }
   }
-}
 
-function initializeNavigation() {
-  $all("[data-page]").forEach(button => {
-    button.addEventListener("click", () => {
-      navigateTo(button.dataset.page);
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]);
+  }
+
+  function formatDate(value) {
+    const date = new Date(value || Date.now());
+
+    return date.toLocaleString([], {
+      dateStyle: "medium",
+      timeStyle: "short"
     });
-  });
-
-  $all("[data-open-page]").forEach(button => {
-    button.addEventListener("click", () => {
-      navigateTo(button.dataset.openPage);
-    });
-  });
-
-  const initialPage = location.hash.replace("#", "");
-
-  if (initialPage && $(`#page-${initialPage}`)) {
-    navigateTo(initialPage, false);
-  } else {
-    navigateTo("dashboard", false);
   }
 
-  window.addEventListener("popstate", () => {
-    const page = location.hash.replace("#", "") || "dashboard";
+  function showToast(message, type = "success") {
+    const container = byId("toastContainer");
+    if (!container) return;
 
-    if ($(`#page-${page}`)) {
-      navigateTo(page, false);
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    window.setTimeout(() => {
+      toast.classList.add("toast-visible");
+    }, 10);
+
+    window.setTimeout(() => {
+      toast.remove();
+    }, 4000);
+  }
+
+  function setStatus(id, message) {
+    const element = byId(id);
+    if (element) element.textContent = message;
+  }
+
+  function setFeedback(id, message) {
+    const element = byId(id);
+    if (element) element.textContent = message;
+  }
+
+  function setButtonLoading(button, loading, loadingText) {
+    if (!button) return;
+
+    if (loading) {
+      button.dataset.originalText = button.textContent;
+      button.disabled = true;
+      if (loadingText) button.textContent = loadingText;
     } else {
-      navigateTo("dashboard", false);
+      button.disabled = false;
+      if (button.dataset.originalText) {
+        button.textContent = button.dataset.originalText;
+        delete button.dataset.originalText;
+      }
     }
-  });
-}
-
-/* ==========================================
-   MOBILE SIDEBAR
-   ========================================== */
-
-function openSidebar() {
-  $("#sidebar")?.classList.add("open");
-  $("#sidebarOverlay")?.classList.add("show");
-}
-
-function closeSidebar() {
-  $("#sidebar")?.classList.remove("open");
-  $("#sidebarOverlay")?.classList.remove("show");
-}
-
-function initializeSidebar() {
-  $("#menuToggle")?.addEventListener("click", openSidebar);
-  $("#closeSidebar")?.addEventListener("click", closeSidebar);
-  $("#sidebarOverlay")?.addEventListener("click", closeSidebar);
-}
-
-/* ==========================================
-   API HELPER
-   ========================================== */
-
-async function postAPI(endpoint, data, timeout = 120000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(data),
-      signal: controller.signal
-    });
-
-    const raw = await response.text();
-
-    let result;
-
-    try {
-      result = JSON.parse(raw);
-    } catch {
-      throw new Error(
-        response.ok
-          ? "The server returned an invalid response."
-          : `Server error (${response.status}).`
-      );
-    }
-
-    if (!response.ok || result.success === false) {
-      throw new Error(
-        result.error ||
-        result.message ||
-        `Request failed (${response.status}).`
-      );
-    }
-
-    return result;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("The request took too long. Please try again.");
-    }
-
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-/* ==========================================
-   JOSEPH BRAIN
-   ========================================== */
-
-function renderBrainMessage(message, sender = "assistant") {
-  const container = $("#chatMessages");
-  if (!container) return;
-
-  const item = document.createElement("div");
-
-  if (sender === "user") {
-    item.className = "user-message";
-    item.textContent = message;
-  } else {
-    item.className = "assistant-message message";
-
-    const avatar = document.createElement("div");
-    avatar.className = "message-avatar";
-    avatar.textContent = "J";
-
-    const body = document.createElement("div");
-    body.className = "message-body";
-
-    const heading = document.createElement("strong");
-    heading.textContent = "Joseph Brain";
-
-    const paragraph = document.createElement("p");
-    paragraph.textContent = message;
-
-    body.append(heading, paragraph);
-    item.append(avatar, body);
   }
 
-  container.appendChild(item);
-  container.scrollTop = container.scrollHeight;
-}
+  function setGlobalLoading(
+    visible,
+    title = "Joseph AI is working...",
+    description = "Please wait."
+  ) {
+    const overlay = byId("loadingOverlay");
+    if (!overlay) return;
 
-function saveBrainHistory(message, sender) {
-  const historyItems = getStorage(JosephAI.storage.brain, []);
+    overlay.hidden = !visible;
 
-  historyItems.push({
-    message,
-    sender,
-    date: new Date().toISOString()
-  });
+    const titleElement = byId("loadingTitle");
+    const descriptionElement = byId("loadingDescription");
 
-  setStorage(
-    JosephAI.storage.brain,
-    historyItems.slice(-60)
-  );
-}
+    if (titleElement) titleElement.textContent = title;
+    if (descriptionElement) {
+      descriptionElement.textContent = description;
+    }
+  }
 
-function loadBrainHistory() {
-  const messages = getStorage(JosephAI.storage.brain, []);
-  const container = $("#chatMessages");
+  async function requestJSON(url, options = {}) {
+    const controller = new AbortController();
 
-  if (!container || !messages.length) return;
-
-  container.innerHTML = "";
-
-  messages.forEach(item => {
-    renderBrainMessage(item.message, item.sender);
-  });
-}
-
-function initializeBrain() {
-  const form = $("#brainForm");
-  const input = $("#brainInput");
-  const button = $("#sendBrainButton");
-
-  if (!form || !input || !button) return;
-
-  loadBrainHistory();
-
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const message = input.value.trim();
-
-    if (!message) return;
-
-    renderBrainMessage(message, "user");
-    saveBrainHistory(message, "user");
-
-    input.value = "";
-    input.style.height = "auto";
-
-    button.disabled = true;
-    button.querySelector("span:first-child").textContent = "Thinking...";
-
-    $("#brainStatus").textContent = "Thinking...";
-    $("#brainFeedback").textContent = "Joseph Brain is processing your request.";
+    const timeout = window.setTimeout(
+      () => controller.abort(),
+      options.timeout || CONFIG.requestTimeout
+    );
 
     try {
-      const result = await postAPI("/api/chat", {
-        message
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          ...(options.body instanceof FormData
+            ? {}
+            : { "Content-Type": "application/json" }),
+          ...(options.headers || {})
+        }
       });
 
-      const answer =
-        result.answer ||
-        result.reply ||
-        result.result ||
-        result.response ||
-        result.message;
+      const text = await response.text();
+      let data = {};
 
-      if (typeof answer !== "string" || !answer.trim()) {
-        throw new Error("Joseph Brain returned an empty answer.");
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { text };
       }
 
-      renderBrainMessage(answer, "assistant");
-      saveBrainHistory(answer, "assistant");
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          `Server returned error ${response.status}`
+        );
+      }
 
-      $("#brainStatus").textContent = "Ready to assist";
-      $("#brainFeedback").textContent = "Response received.";
-      $("#connectionText").textContent = "Brain connected";
-      $(".connection-dot").style.background = "var(--green)";
+      return data;
     } catch (error) {
-      renderBrainMessage(
-        "I couldn't complete that request. " + error.message,
-        "assistant"
+      if (error.name === "AbortError") {
+        throw new Error(
+          "The request took too long. Please try again."
+        );
+      }
+
+      if (error instanceof TypeError) {
+        throw new Error(
+          "Could not connect to the service. Check your internet connection and backend deployment."
+        );
+      }
+
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  function downloadFile(filename, content, type = "text/plain") {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function downloadJSON(filename, data) {
+    downloadFile(
+      filename,
+      JSON.stringify(data, null, 2),
+      "application/json"
+    );
+  }
+
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(
+        new Error(`Could not read ${file.name}`)
       );
 
-      $("#brainStatus").textContent = "Connection issue";
-      $("#brainFeedback").textContent = "Please check your connection and try again.";
-      $("#connectionText").textContent = "Connection issue";
-      $(".connection-dot").style.background = "var(--danger)";
-    } finally {
-      button.disabled = false;
-      button.querySelector("span:first-child").textContent = "Send";
-    }
-  });
-
-  input.addEventListener("input", () => {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 130) + "px";
-  });
-
-  $("#clearBrainChat")?.addEventListener("click", () => {
-    if (!confirm("Start a new chat? This clears the saved conversation on this device.")) {
-      return;
-    }
-
-    $("#chatMessages").innerHTML = "";
-    localStorage.removeItem(JosephAI.storage.brain);
-
-    renderBrainMessage(
-      "Hello! I'm Joseph Brain. What would you like us to work on today?"
-    );
-
-    $("#brainStatus").textContent = "Ready to assist";
-    showToast("New conversation started.", "success");
-  });
-}
-
-/* ==========================================
-   WEBSITE BUILDER
-   ========================================== */
-
-function getWebsiteBrief() {
-  return {
-    projectName: $("#websiteProjectName").value.trim(),
-    businessType: $("#websiteBusinessType").value,
-    style: $("#websiteStyle").value,
-    description: $("#websiteDescription").value.trim(),
-    features: $("#websiteFeatures").value.trim(),
-    palette: $("#websitePalette").value,
-    size: $("#websiteSize").value,
-    extraInstructions: $("#websiteExtra").value.trim()
-  };
-}
-
-function validateWebsiteFiles(files) {
-  return (
-    files &&
-    typeof files.html === "string" &&
-    typeof files.css === "string" &&
-    typeof files.js === "string" &&
-    files.html.trim() &&
-    files.css.trim() &&
-    files.js.trim()
-  );
-}
-
-function buildPreviewDocument(html, css, js) {
-  const safeCSS = String(css).replace(/<\/style/gi, "<\\/style");
-  const safeJS = String(js).replace(/<\/script/gi, "<\\/script");
-
-  let documentHTML = String(html);
-
-  const styleTag = `<style>${safeCSS}</style>`;
-  const scriptTag = `<script>${safeJS}<\/script>`;
-
-  if (/<\/head>/i.test(documentHTML)) {
-    documentHTML = documentHTML.replace(
-      /<\/head>/i,
-      `${styleTag}</head>`
-    );
-  } else {
-    documentHTML = styleTag + documentHTML;
-  }
-
-  if (/<\/body>/i.test(documentHTML)) {
-    documentHTML = documentHTML.replace(
-      /<\/body>/i,
-      `${scriptTag}</body>`
-    );
-  } else {
-    documentHTML += scriptTag;
-  }
-
-  return documentHTML;
-}
-
-function showWebsitePreview(files) {
-  const iframe = $("#websitePreview");
-  const placeholder = $("#previewPlaceholder");
-
-  if (!iframe || !placeholder) return;
-
-  iframe.srcdoc = buildPreviewDocument(
-    files.html,
-    files.css,
-    files.js
-  );
-
-  iframe.hidden = false;
-  placeholder.hidden = true;
-}
-
-function renderWebsiteCode(tab = "html") {
-  const code = $("#websiteCodeOutput");
-  if (!code) return;
-
-  JosephAI.currentCodeTab = tab;
-
-  code.textContent = JosephAI.websiteFiles[tab] || "No file generated yet.";
-
-  $all("[data-code-tab]").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.codeTab === tab
-    );
-  });
-}
-
-function setWebsiteFiles(files) {
-  JosephAI.websiteFiles = {
-    html: files.html,
-    css: files.css,
-    js: files.js
-  };
-
-  renderWebsiteCode(JosephAI.currentCodeTab);
-
-  $("#websiteFileStatus").textContent = "3 files ready";
-  showWebsitePreview(JosephAI.websiteFiles);
-}
-
-function saveWebsiteProject(brief, files) {
-  const projects = getStorage(JosephAI.storage.websites);
-
-  const project = {
-    id: createId(),
-    name: brief.projectName,
-    businessType: brief.businessType,
-    brief,
-    files,
-    createdAt: new Date().toISOString()
-  };
-
-  projects.unshift(project);
-
-  const saved = projects.slice(0, 15);
-
-  if (setStorage(JosephAI.storage.websites, saved)) {
-    JosephAI.currentWebsiteProject = project;
-    renderSavedWebsites();
-    recordActivity(project.name, "Website");
-  }
-}
-
-async function generateWebsite(event) {
-  event.preventDefault();
-
-  const brief = getWebsiteBrief();
-  const button = $("#generateWebsiteButton");
-
-  if (!brief.projectName || !brief.businessType || !brief.description) {
-    setFeedback(
-      "#websiteFeedback",
-      "Please complete the project name, business type and description.",
-      "error"
-    );
-    return;
-  }
-
-  setButtonLoading(button, true, "Generating website...");
-
-  setFeedback(
-    "#websiteFeedback",
-    "Joseph AI is creating your website. This may take a little time."
-  );
-
-  $("#websiteFileStatus").textContent = "Generating...";
-
-  try {
-    const result = await postAPI(
-      "/api/website",
-      {
-        action: "generate",
-        brief
-      },
-      120000
-    );
-
-    const files = result.files || result;
-
-    if (!validateWebsiteFiles(files)) {
-      throw new Error("The server did not return all three website files.");
-    }
-
-    setWebsiteFiles(files);
-    saveWebsiteProject(brief, files);
-
-    setFeedback(
-      "#websiteFeedback",
-      "Your website files have been generated successfully.",
-      "success"
-    );
-
-    showToast("Website generated successfully.", "success");
-  } catch (error) {
-    console.error("Website generation error:", error);
-
-    $("#websiteFileStatus").textContent = "Generation failed";
-
-    setFeedback(
-      "#websiteFeedback",
-      error.message || "Website generation failed.",
-      "error"
-    );
-
-    showToast(error.message, "error");
-  } finally {
-    setButtonLoading(button, false);
-  }
-}
-
-function renderSavedWebsites() {
-  const projects = getStorage(JosephAI.storage.websites);
-  const container = $("#savedWebsiteProjects");
-
-  if (!container) return;
-
-  $("#websiteSavedCount").textContent = `${projects.length} projects`;
-
-  if (!projects.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">▤</span>
-        <p>Your saved website projects will appear here.</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = projects.map(project => `
-    <div class="saved-project-item">
-      <div class="project-item-icon">▣</div>
-      <div class="project-item-info">
-        <strong>${escapeHTML(project.name)}</strong>
-        <span>${escapeHTML(project.businessType || "Website")} · ${escapeHTML(formatDate(project.createdAt))}</span>
-      </div>
-      <div class="item-actions">
-        <button type="button" data-load-website="${escapeHTML(project.id)}">Open</button>
-        <button type="button" data-delete-website="${escapeHTML(project.id)}">Delete</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-function loadWebsiteProject(id) {
-  const projects = getStorage(JosephAI.storage.websites);
-  const project = projects.find(item => item.id === id);
-
-  if (!project || !validateWebsiteFiles(project.files)) {
-    showToast("This project could not be opened.", "error");
-    return;
-  }
-
-  JosephAI.currentWebsiteProject = project;
-
-  $("#websiteProjectName").value = project.brief.projectName || project.name || "";
-  $("#websiteBusinessType").value = project.brief.businessType || "";
-  $("#websiteStyle").value = project.brief.style || "Modern premium";
-  $("#websiteDescription").value = project.brief.description || "";
-  $("#websiteFeatures").value = project.brief.features || "";
-  $("#websitePalette").value = project.brief.palette || "Black and gold";
-  $("#websiteSize").value = project.brief.size || "Multi-page style single-page website";
-  $("#websiteExtra").value = project.brief.extraInstructions || "";
-
-  setWebsiteFiles(project.files);
-  navigateTo("website-builder");
-
-  showToast("Website project opened.", "success");
-}
-
-function deleteWebsiteProject(id) {
-  if (!confirm("Delete this saved website project?")) return;
-
-  const projects = getStorage(JosephAI.storage.websites)
-    .filter(project => project.id !== id);
-
-  setStorage(JosephAI.storage.websites, projects);
-  renderSavedWebsites();
-  renderAllProjects();
-
-  showToast("Website project deleted.", "success");
-}
-
-function initializeWebsiteBuilder() {
-  $("#websiteForm")?.addEventListener("submit", generateWebsite);
-
-  $all("[data-code-tab]").forEach(button => {
-    button.addEventListener("click", () => {
-      renderWebsiteCode(button.dataset.codeTab);
+      reader.readAsDataURL(file);
     });
-  });
+  }
 
-  $("#desktopPreviewButton")?.addEventListener("click", () => {
-    $("#previewStage")?.classList.remove("mobile-preview");
-    $("#desktopPreviewButton")?.classList.add("active");
-    $("#mobilePreviewButton")?.classList.remove("active");
-  });
+  function recordActivity(title, type = "activity") {
+    state.activity.unshift({
+      id: makeId(),
+      title,
+      type,
+      createdAt: new Date().toISOString()
+    });
 
-  $("#mobilePreviewButton")?.addEventListener("click", () => {
-    $("#previewStage")?.classList.add("mobile-preview");
-    $("#mobilePreviewButton")?.classList.add("active");
-    $("#desktopPreviewButton")?.classList.remove("active");
-  });
+    state.activity = state.activity.slice(0, 100);
 
-  $("#copyWebsiteFile")?.addEventListener("click", () => {
-    copyText(JosephAI.websiteFiles[JosephAI.currentCodeTab]);
-  });
+    safeWrite(CONFIG.storage.activity, state.activity);
+    renderActivityHistory();
+  }
 
-  $("#downloadWebsiteFile")?.addEventListener("click", () => {
-    const tab = JosephAI.currentCodeTab;
-    const extensions = {
-      html: "html",
-      css: "css",
-      js: "js"
+  /* =======================================================
+     INITIAL DATA
+     ======================================================= */
+
+  function loadData() {
+    state.conversations = safeRead(
+      CONFIG.storage.conversations,
+      []
+    );
+
+    state.activeConversationId = safeRead(
+      CONFIG.storage.activeConversation,
+      null
+    );
+
+    state.projects = safeRead(CONFIG.storage.projects, []);
+    state.websites = safeRead(CONFIG.storage.websites, []);
+    state.contentHistory = safeRead(CONFIG.storage.content, []);
+    state.activity = safeRead(CONFIG.storage.activity, []);
+    state.memory = safeRead(CONFIG.storage.memory, []);
+    state.applications = safeRead(CONFIG.storage.applications, []);
+
+    const settings = safeRead(CONFIG.storage.settings, {});
+
+    applySettings(settings);
+
+    if (
+      state.activeConversationId &&
+      state.conversations.some(
+        item => item.id === state.activeConversationId
+      )
+    ) {
+      const conversation = state.conversations.find(
+        item => item.id === state.activeConversationId
+      );
+
+      state.messages = conversation.messages || [];
+      renderMessages();
+    } else {
+      createConversation(false);
+    }
+
+    renderAll();
+  }
+
+  function saveConversations() {
+    safeWrite(CONFIG.storage.conversations, state.conversations);
+    safeWrite(
+      CONFIG.storage.activeConversation,
+      state.activeConversationId
+    );
+  }
+
+  function saveProjects() {
+    safeWrite(CONFIG.storage.projects, state.projects);
+    renderProjects();
+  }
+
+  function saveWebsites() {
+    safeWrite(CONFIG.storage.websites, state.websites);
+    renderWebsiteProjects();
+    renderProjects();
+  }
+
+  function renderAll() {
+    renderMessages();
+    renderHistory();
+    renderActivityHistory();
+    renderMemory();
+    renderWebsiteProjects();
+    renderContentHistory();
+    renderApplications();
+    renderProjects();
+    renderAutopilotStats();
+  }
+
+  /* =======================================================
+     NAVIGATION
+     ======================================================= */
+
+  function openPage(page) {
+    if (!pageNames[page]) return;
+
+    state.currentPage = page;
+
+    $$(".page-section").forEach(section => {
+      section.classList.toggle(
+        "active",
+        section.dataset.pageSection === page
+      );
+    });
+
+    $$(".nav-item").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+    });
+
+    const title = byId("currentPageName");
+    if (title) title.textContent = pageNames[page];
+
+    closeSidebar();
+
+    if (page === "history") renderHistory();
+    if (page === "projects") renderProjects();
+    if (page === "memory") renderMemory();
+    if (page === "autopilot") renderAutopilotStats();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openSidebar() {
+    byId("sidebar")?.classList.add("sidebar-open");
+    byId("sidebarOverlay")?.classList.add("active");
+  }
+
+  function closeSidebar() {
+    byId("sidebar")?.classList.remove("sidebar-open");
+    byId("sidebarOverlay")?.classList.remove("active");
+  }
+
+  function setupNavigation() {
+    $$("[data-page]").forEach(button => {
+      button.addEventListener("click", () => {
+        openPage(button.dataset.page);
+      });
+    });
+
+    $$("[data-open-page]").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        openPage(button.dataset.openPage);
+      });
+    });
+
+    byId("menuToggle")?.addEventListener("click", openSidebar);
+    byId("closeSidebar")?.addEventListener("click", closeSidebar);
+    byId("sidebarOverlay")?.addEventListener("click", closeSidebar);
+
+    byId("newChatButton")?.addEventListener("click", () => {
+      createConversation();
+      openPage("brain");
+    });
+
+    byId("clearBrainChat")?.addEventListener("click", () => {
+      createConversation();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeSidebar();
+    });
+  }
+
+  /* =======================================================
+     CONVERSATIONS AND BRAIN
+     ======================================================= */
+
+  function createConversation(showMessage = true) {
+    const conversation = {
+      id: makeId(),
+      title: "New conversation",
+      messages: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    const name = `website.${extensions[tab]}`;
-    downloadText(name, JosephAI.websiteFiles[tab]);
-  });
+    state.conversations.unshift(conversation);
+    state.activeConversationId = conversation.id;
+    state.messages = [];
 
-  $("#downloadAllWebsiteFiles")?.addEventListener("click", () => {
-    const files = JosephAI.websiteFiles;
+    saveConversations();
+    renderMessages();
+    renderHistory();
 
-    if (!validateWebsiteFiles(files)) {
-      showToast("Generate a website before downloading.", "error");
+    if (showMessage) {
+      showToast("New conversation started.");
+    }
+  }
+
+  function getActiveConversation() {
+    return state.conversations.find(
+      item => item.id === state.activeConversationId
+    );
+  }
+
+  function saveActiveConversation() {
+    const conversation = getActiveConversation();
+    if (!conversation) return;
+
+    conversation.messages = state.messages;
+    conversation.updatedAt = new Date().toISOString();
+
+    const firstUserMessage = state.messages.find(
+      message => message.role === "user"
+    );
+
+    if (firstUserMessage) {
+      conversation.title =
+        firstUserMessage.content.slice(0, 55) ||
+        "New conversation";
+    }
+
+    saveConversations();
+    renderHistory();
+  }
+
+  function renderMessages() {
+    const container = byId("chatMessages");
+    if (!container) return;
+
+    if (!state.messages.length) {
+      container.innerHTML = `
+        <div class="welcome-screen" id="brainWelcome">
+          <div class="welcome-symbol">✦</div>
+          <h2>What can I help you with today?</h2>
+          <p>Ask me anything. Let's think, build, learn and make progress together.</p>
+
+          <div class="suggestion-grid">
+            <button class="suggestion-card" data-prompt="Help me plan and build a professional website for a customer." type="button">
+              <span class="suggestion-icon">⌘</span>
+              <strong>Build a website</strong>
+              <small>Create a professional website for a client.</small>
+            </button>
+
+            <button class="suggestion-card" data-prompt="Give me real online work opportunities I can apply for from Nigeria." type="button">
+              <span class="suggestion-icon">↗</span>
+              <strong>Find online work</strong>
+              <small>Discover real opportunities and next steps.</small>
+            </button>
+
+            <button class="suggestion-card" data-prompt="Help me create an app and explain how to publish it." type="button">
+              <span class="suggestion-icon">▣</span>
+              <strong>Create an app</strong>
+              <small>Plan and develop a real application.</small>
+            </button>
+
+            <button class="suggestion-card" data-prompt="Give me a creative business idea and explain how I can start." type="button">
+              <span class="suggestion-icon">✧</span>
+              <strong>Explore an idea</strong>
+              <small>Get practical ideas and guidance.</small>
+            </button>
+          </div>
+        </div>
+      `;
+
+      bindSuggestionButtons();
       return;
     }
 
-    downloadText("index.html", files.html, "text/html");
-    setTimeout(() => {
-      downloadText("style.css", files.css, "text/css");
-    }, 300);
+    container.innerHTML = "";
 
-    setTimeout(() => {
-      downloadText("script.js", files.js, "text/javascript");
-    }, 600);
+    state.messages.forEach(message => {
+      const wrapper = document.createElement("article");
+      wrapper.className = `chat-message ${message.role === "user" ? "user-message" : "assistant-message"}`;
 
-    showToast("Your three website files are being downloaded.", "success");
-  });
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.textContent = message.role === "user" ? "J" : "✦";
 
-  $("#savedWebsiteProjects")?.addEventListener("click", event => {
-    const openButton = event.target.closest("[data-load-website]");
-    const deleteButton = event.target.closest("[data-delete-website]");
+      const content = document.createElement("div");
+      content.className = "message-content";
 
-    if (openButton) {
-      loadWebsiteProject(openButton.dataset.loadWebsite);
+      const label = document.createElement("div");
+      label.className = "message-author";
+      label.textContent = message.role === "user" ? "You" : "Joseph AI";
+
+      const body = document.createElement("div");
+      body.className = "message-text";
+      body.textContent = message.content || "";
+
+      content.append(label, body);
+
+      if (message.attachments?.length) {
+        const files = document.createElement("div");
+        files.className = "message-attachments";
+
+        message.attachments.forEach(file => {
+          const item = document.createElement("span");
+          item.className = "message-attachment";
+          item.textContent = file.name;
+          files.appendChild(item);
+        });
+
+        content.appendChild(files);
+      }
+
+      if (message.role === "assistant" && message.content) {
+        const actions = document.createElement("div");
+        actions.className = "message-actions";
+
+        const copy = document.createElement("button");
+        copy.type = "button";
+        copy.className = "text-button";
+        copy.textContent = "Copy";
+        copy.addEventListener("click", () => {
+          copyText(message.content);
+        });
+
+        const speak = document.createElement("button");
+        speak.type = "button";
+        speak.className = "text-button";
+        speak.textContent = "Read aloud";
+        speak.addEventListener("click", () => {
+          speakText(message.content);
+        });
+
+        actions.append(copy, speak);
+        content.appendChild(actions);
+      }
+
+      wrapper.append(avatar, content);
+      container.appendChild(wrapper);
+    });
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function bindSuggestionButtons() {
+    $$("[data-prompt]").forEach(button => {
+      button.addEventListener("click", () => {
+        const input = byId("brainInput");
+        if (!input) return;
+
+        input.value = button.dataset.prompt;
+        input.focus();
+        autoResizeTextarea(input);
+      });
+    });
+  }
+
+  function addMessage(role, content, attachments = []) {
+    state.messages.push({
+      id: makeId(),
+      role,
+      content,
+      attachments: attachments.map(file => ({
+        name: file.name,
+        type: file.type
+      })),
+      createdAt: new Date().toISOString()
+    });
+
+    saveActiveConversation();
+    renderMessages();
+  }
+
+  function autoResizeTextarea(textarea) {
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height =
+      Math.min(textarea.scrollHeight, 220) + "px";
+  }
+
+  function getConversationForAPI() {
+    return state.messages
+      .slice(-20)
+      .map(message => ({
+        role: message.role,
+        content: message.content
+      }));
+  }
+
+  async function sendBrainMessage(message) {
+    if (state.isSending) return;
+
+    const text = String(message || "").trim();
+
+    if (!text && !state.attachments.length) {
+      showToast("Write a message or attach a file first.", "warning");
+      return;
     }
 
-    if (deleteButton) {
-      deleteWebsiteProject(deleteButton.dataset.deleteWebsite);
-    }
-  });
+    const attachments = [...state.attachments];
 
-  renderSavedWebsites();
-}
+    state.isSending = true;
 
-/* ==========================================
-   CONTENT CREATOR
-   ========================================== */
+    const sendButton = byId("sendBrainButton");
+    if (sendButton) sendButton.disabled = true;
 
-function getContentBrief() {
-  return {
-    contentType: $("#contentType").value,
-    platform: $("#contentPlatform").value,
-    tone: $("#contentTone").value,
-    subject: $("#contentSubject").value.trim(),
-    audience: $("#contentAudience").value.trim(),
-    goal: $("#contentGoal").value,
-    length: $("#contentLength").value,
-    extraInstructions: $("#contentExtra").value.trim()
-  };
-}
-
-function displayGeneratedContent(content) {
-  JosephAI.currentContent = content;
-
-  $("#contentPlaceholder").hidden = true;
-  $("#contentOutput").hidden = false;
-
-  $("#generatedContentText").textContent = content;
-  $("#contentResultStatus").textContent = "Content ready";
-  $("#contentResultStatus").classList.add("ready");
-
-  $("#copyGeneratedContent").disabled = false;
-  $("#downloadGeneratedContent").disabled = false;
-  $("#regenerateContent").disabled = false;
-}
-
-function saveContentHistory(brief, content) {
-  const historyItems = getStorage(JosephAI.storage.content);
-
-  historyItems.unshift({
-    id: createId(),
-    type: brief.contentType,
-    subject: brief.subject,
-    brief,
-    content,
-    createdAt: new Date().toISOString()
-  });
-
-  setStorage(
-    JosephAI.storage.content,
-    historyItems.slice(0, 20)
-  );
-
-  renderContentHistory();
-  recordActivity(brief.contentType, "Content");
-}
-
-async function generateContent() {
-  const brief = getContentBrief();
-  const button = $("#generateContentButton");
-
-  if (!brief.contentType || !brief.subject) {
-    setFeedback(
-      "#contentFeedback",
-      "Please choose a content type and describe your topic.",
-      "error"
-    );
-    return;
-  }
-
-  setButtonLoading(button, true, "Creating content...");
-
-  setFeedback(
-    "#contentFeedback",
-    "Joseph AI is preparing your content..."
-  );
-
-  $("#contentResultStatus").textContent = "Generating...";
-  $("#contentResultStatus").classList.remove("ready");
-
-  try {
-    const result = await postAPI(
-      "/api/content",
-      {
-        action: "generate",
-        brief
-      },
-      120000
+    addMessage(
+      "user",
+      text || "Please examine the attached file.",
+      attachments
     );
 
-    const content =
-      result.content ||
-      result.text ||
-      result.output ||
-      result.result;
+    state.attachments = [];
+    renderAttachments();
 
-    if (typeof content !== "string" || !content.trim()) {
-      throw new Error("The server returned an empty content result.");
+    const input = byId("brainInput");
+    if (input) {
+      input.value = "";
+      autoResizeTextarea(input);
     }
 
-    displayGeneratedContent(content);
-    saveContentHistory(brief, content);
-
-    JosephAI.lastContentRequest = brief;
-
-    setFeedback(
-      "#contentFeedback",
-      "Your content has been created successfully.",
-      "success"
+    setGlobalLoading(
+      true,
+      "Joseph AI is thinking...",
+      "Preparing your response."
     );
 
-    showToast("Content generated successfully.", "success");
-  } catch (error) {
-    console.error("Content generation error:", error);
+    setStatus("connectionText", "Working");
 
-    $("#contentResultStatus").textContent = "Generation failed";
+    try {
+      const encodedAttachments = [];
 
-    setFeedback(
-      "#contentFeedback",
-      error.message || "Content generation failed.",
-      "error"
-    );
+      for (const file of attachments) {
+        encodedAttachments.push({
+          name: file.name,
+          type: file.type,
+          data: await readFileAsDataURL(file)
+        });
+      }
 
-    showToast(error.message, "error");
-  } finally {
-    setButtonLoading(button, false);
+      const data = await requestJSON(CONFIG.api.chat, {
+        method: "POST",
+        body: JSON.stringify({
+          message: text,
+          conversation: getConversationForAPI(),
+          attachments: encodedAttachments,
+          settings: {
+            webSearch: getSettings().webSearch !== false,
+            model: getSettings().defaultModel || "auto"
+          }
+        })
+      });
+
+      const reply =
+        data.reply ||
+        data.response ||
+        data.message ||
+        data.text;
+
+      if (!reply || typeof reply !== "string") {
+        throw new Error(
+          "The AI service returned no readable response."
+        );
+      }
+
+      addMessage("assistant", reply);
+      recordActivity("Conversation response received", "chat");
+
+      if (getSettings().speakResponses) {
+        speakText(reply);
+      }
+
+      setStatus("connectionText", "Ready");
+    } catch (error) {
+      addMessage(
+        "assistant",
+        `I couldn't complete that request. ${error.message}\n\nPlease check that the chat backend is deployed and configured.`
+      );
+
+      setStatus("connectionText", "Connection issue");
+      showToast(error.message, "error");
+    } finally {
+      state.isSending = false;
+      if (sendButton) sendButton.disabled = false;
+
+      setGlobalLoading(false);
+    }
   }
-}
 
-function regenerateContent() {
-  if (!JosephAI.lastContentRequest) {
-    showToast("Generate some content first.", "error");
-    return;
+  function setupBrain() {
+    byId("brainForm")?.addEventListener("submit", event => {
+      event.preventDefault();
+      sendBrainMessage(byId("brainInput")?.value || "");
+    });
+
+    const input = byId("brainInput");
+
+    input?.addEventListener("input", () => {
+      autoResizeTextarea(input);
+    });
+
+    input?.addEventListener("keydown", event => {
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey &&
+        !event.isComposing
+      ) {
+        event.preventDefault();
+        byId("brainForm")?.requestSubmit();
+      }
+    });
+
+    byId("attachFileButton")?.addEventListener("click", () => {
+      byId("brainFileInput")?.click();
+    });
+
+    byId("brainImageButton")?.addEventListener("click", () => {
+      byId("brainImageInput")?.click();
+    });
+
+    byId("brainFileInput")?.addEventListener("change", event => {
+      addAttachments(event.target.files);
+      event.target.value = "";
+    });
+
+    byId("brainImageInput")?.addEventListener("change", event => {
+      addAttachments(event.target.files);
+      event.target.value = "";
+    });
+
+    byId("clearAttachments")?.addEventListener("click", () => {
+      state.attachments = [];
+      renderAttachments();
+    });
+
+    byId("stopSpeakingButton")?.addEventListener("click", stopSpeaking);
+
+    bindSuggestionButtons();
   }
 
-  $("#contentType").value = JosephAI.lastContentRequest.contentType;
-  $("#contentPlatform").value = JosephAI.lastContentRequest.platform;
-  $("#contentTone").value = JosephAI.lastContentRequest.tone;
-  $("#contentSubject").value = JosephAI.lastContentRequest.subject;
-  $("#contentAudience").value = JosephAI.lastContentRequest.audience;
-  $("#contentGoal").value = JosephAI.lastContentRequest.goal;
-  $("#contentLength").value = JosephAI.lastContentRequest.length;
-  $("#contentExtra").value = JosephAI.lastContentRequest.extraInstructions;
+  /* =======================================================
+     ATTACHMENTS
+     ======================================================= */
 
-  $("#contentForm").requestSubmit();
-}
+  function addAttachments(fileList) {
+    const files = Array.from(fileList || []);
 
-function renderContentHistory() {
-  const items = getStorage(JosephAI.storage.content);
-  const container = $("#contentHistoryList");
+    if (!files.length) return;
 
-  if (!container) return;
+    for (const file of files) {
+      if (state.attachments.length >= CONFIG.maxAttachments) {
+        showToast(
+          `You can attach up to ${CONFIG.maxAttachments} files at a time.`,
+          "warning"
+        );
+        break;
+      }
 
-  $("#contentSavedCount").textContent = `${items.length} items`;
+      if (file.size > CONFIG.maxAttachmentSize) {
+        showToast(
+          `${file.name} is too large. Maximum size is 8 MB per file.`,
+          "warning"
+        );
+        continue;
+      }
 
-  if (!items.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">✎</span>
-        <p>Your generated content history will appear here.</p>
-      </div>
-    `;
-    return;
-  }
+      const alreadyAdded = state.attachments.some(
+        item =>
+          item.name === file.name &&
+          item.size === file.size
+      );
 
-  container.innerHTML = items.map(item => `
-    <div class="content-history-item">
-      <div class="project-item-icon">✎</div>
-      <div class="content-history-info">
-        <strong>${escapeHTML(item.type)}</strong>
-        <span>${escapeHTML(item.subject)} · ${escapeHTML(formatDate(item.createdAt))}</span>
-      </div>
-      <div class="item-actions">
-        <button type="button" data-open-content="${escapeHTML(item.id)}">Open</button>
-        <button type="button" data-delete-content="${escapeHTML(item.id)}">Delete</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-function openContentHistory(id) {
-  const items = getStorage(JosephAI.storage.content);
-  const item = items.find(entry => entry.id === id);
-
-  if (!item) return;
-
-  displayGeneratedContent(item.content);
-  JosephAI.lastContentRequest = item.brief;
-
-  navigateTo("content-creator");
-  showToast("Saved content opened.", "success");
-}
-
-function deleteContentHistory(id) {
-  if (!confirm("Delete this saved content?")) return;
-
-  const items = getStorage(JosephAI.storage.content)
-    .filter(item => item.id !== id);
-
-  setStorage(JosephAI.storage.content, items);
-  renderContentHistory();
-  renderAllProjects();
-
-  showToast("Content deleted.", "success");
-}
-
-function initializeContentCreator() {
-  $("#contentForm")?.addEventListener("submit", event => {
-    event.preventDefault();
-    generateContent();
-  });
-
-  $("#copyGeneratedContent")?.addEventListener("click", () => {
-    copyText(JosephAI.currentContent);
-  });
-
-  $("#downloadGeneratedContent")?.addEventListener("click", () => {
-    if (!JosephAI.currentContent) return;
-
-    downloadText(
-      "joseph-ai-content.txt",
-      JosephAI.currentContent
-    );
-  });
-
-  $("#regenerateContent")?.addEventListener("click", regenerateContent);
-
-  $("#contentHistoryList")?.addEventListener("click", event => {
-    const openButton = event.target.closest("[data-open-content]");
-    const deleteButton = event.target.closest("[data-delete-content]");
-
-    if (openButton) {
-      openContentHistory(openButton.dataset.openContent);
+      if (!alreadyAdded) state.attachments.push(file);
     }
 
-    if (deleteButton) {
-      deleteContentHistory(deleteButton.dataset.deleteContent);
+    renderAttachments();
+  }
+
+  function renderAttachments() {
+    const preview = byId("attachmentPreview");
+    const list = byId("attachmentList");
+
+    if (!preview || !list) return;
+
+    list.innerHTML = "";
+
+    if (!state.attachments.length) {
+      preview.hidden = true;
+      return;
     }
-  });
 
-  renderContentHistory();
-}
-/* ==========================================
-   PROJECTS
-   ========================================== */
+    preview.hidden = false;
 
-function renderAllProjects() {
-  const container = $("#allProjectsList");
-  if (!container) return;
+    state.attachments.forEach(file => {
+      const item = document.createElement("div");
+      item.className = "attachment-item";
 
-  const websites = getStorage(JosephAI.storage.websites);
-  const contents = getStorage(JosephAI.storage.content);
+      const name = document.createElement("span");
+      name.textContent = file.name;
 
-  const combined = [
-    ...websites.map(item => ({
-      id: item.id,
-      name: item.name,
-      type: "Website",
-      date: item.createdAt
-    })),
-    ...contents.map(item => ({
-      id: item.id,
-      name: item.type + ": " + item.subject,
-      type: "Content",
-      date: item.createdAt
-    }))
-  ].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", `Remove ${file.name}`);
 
-  if (!combined.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">▤</span>
-        <p>Your projects will appear here.</p>
-      </div>
-    `;
-    return;
+      remove.addEventListener("click", () => {
+        state.attachments = state.attachments.filter(
+          item => item !== file
+        );
+        renderAttachments();
+      });
+
+      item.append(name, remove);
+      list.appendChild(item);
+    });
   }
 
-  container.innerHTML = combined.map(item => `
-    <div class="saved-project-item">
-      <div class="project-item-icon">${item.type === "Website" ? "▣" : "✎"}</div>
-      <div class="project-item-info">
-        <strong>${escapeHTML(item.name)}</strong>
-        <span>${escapeHTML(item.type)} · ${escapeHTML(formatDate(item.date))}</span>
-      </div>
-      <span class="file-status">${escapeHTML(item.type)}</span>
-    </div>
-  `).join("");
-}
+  
+  /* =======================================================
+     COPY AND SPEECH
+     ======================================================= */
 
-/* ==========================================
-   ACTIVITY
-   ========================================== */
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(String(text || ""));
+      showToast("Copied to clipboard.");
+    } catch {
+      const temporary = document.createElement("textarea");
+      temporary.value = String(text || "");
+      document.body.appendChild(temporary);
+      temporary.select();
 
-function renderActivity(selector = "#dashboardActivity") {
-  const container = $(selector);
-  if (!container) return;
+      try {
+        document.execCommand("copy");
+        showToast("Copied to clipboard.");
+      } catch {
+        showToast("Could not copy this text.", "error");
+      }
 
-  const activities = getStorage(JosephAI.storage.activity);
-
-  if (!activities.length) {
-    container.innerHTML = `
-      <div class="empty-state compact-empty">
-        <span class="empty-icon">◷</span>
-        <p>Your recent activity will appear here.</p>
-      </div>
-    `;
-    return;
+      temporary.remove();
+    }
   }
 
-  container.innerHTML = activities.map(item => `
-    <div class="activity-item">
-      <div class="project-item-icon">${item.category === "Website" ? "▣" : "✎"}</div>
-      <div class="activity-info">
-        <strong>${escapeHTML(item.title)}</strong>
-        <span>${escapeHTML(item.category)} · ${escapeHTML(formatDate(item.date))}</span>
-      </div>
-    </div>
-  `).join("");
-}
+  function speakText(text) {
+    if (!("speechSynthesis" in window)) {
+      showToast(
+        "Speech playback is not supported by this browser.",
+        "warning"
+      );
+      return;
+    }
 
-/* ==========================================
-   CONNECTION INDICATOR
-   ========================================== */
+    stopSpeaking();
 
-function initializeConnectionIndicator() {
-  $("#connectionText").textContent = navigator.onLine
-    ? "Online"
-    : "Offline";
+    const utterance = new SpeechSynthesisUtterance(
+      String(text || "")
+    );
 
-  $(".connection-dot").style.background = navigator.onLine
-    ? "var(--green)"
-    : "var(--danger)";
+    utterance.lang = state.speechLanguage;
+    utterance.rate = 1;
+    utterance.pitch = 1;
 
-  window.addEventListener("online", () => {
-    $("#connectionText").textContent = "Online";
-    $(".connection-dot").style.background = "var(--green)";
-  });
+    utterance.onstart = () => {
+      const button = byId("stopSpeakingButton");
+      if (button) button.hidden = false;
+    };
 
-  window.addEventListener("offline", () => {
-    $("#connectionText").textContent = "Offline";
-    $(".connection-dot").style.background = "var(--danger)";
-  });
-}
+    utterance.onend = () => {
+      const button = byId("stopSpeakingButton");
+      if (button) button.hidden = true;
+    };
 
-/* ==========================================
-   APPLICATION STARTUP
-   ========================================== */
+    utterance.onerror = () => {
+      const button = byId("stopSpeakingButton");
+      if (button) button.hidden = true;
+    };
 
-function initializeJosephAI() {
-  console.log("Joseph AI V2 starting...");
+    window.speechSynthesis.speak(utterance);
+  }
 
-  initializeNavigation();
-  initializeSidebar();
-  initializeConnectionIndicator();
+  function stopSpeaking() {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
 
-  initializeBrain();
-  initializeWebsiteBuilder();
-  initializeContentCreator();
+    const button = byId("stopSpeakingButton");
+    if (button) button.hidden = true;
+  }
 
-  renderActivity();
-  renderAllProjects();
+  /* =======================================================
+     VOICE CONVERSATION
+     ======================================================= */
 
-  console.log("Joseph AI V2 frontend initialized.");
-}
+  function setVoiceState(title, description, status) {
+    setStatus("voiceStateTitle", title);
+    setStatus("voiceStateDescription", description);
+    setStatus("voiceStatus", status);
+  }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeJosephAI);
-} else {
-  initializeJosephAI();
-}
+  function appendVoiceTranscript(label, text) {
+    const container = byId("voiceTranscript");
+    if (!container) return;
+
+    if (container.querySelector(".muted-text")) {
+      container.innerHTML = "";
+    }
+
+    const line = document.createElement("p");
+    line.textContent = `${label}: ${text}`;
+
+    container.appendChild(line);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function startVoiceRecognition() {
+    const Recognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!Recognition) {
+      showToast(
+        "Voice recognition is not supported in this browser. Try a supported browser or type your message.",
+        "warning"
+      );
+
+      setVoiceState(
+        "Voice not available",
+        "Your browser does not support speech recognition.",
+        "Unavailable"
+      );
+
+      return;
+    }
+
+    if (state.recognition) {
+      try {
+        state.recognition.stop();
+      } catch {}
+    }
+
+    const recognition = new Recognition();
+
+    recognition.lang =
+      byId("voiceLanguage")?.value || "en-US";
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    state.recognition = recognition;
+    state.isListening = true;
+
+    setVoiceState(
+      "I'm listening...",
+      "Speak clearly. Your words will appear in the transcript.",
+      "Listening"
+    );
+
+    byId("voiceOrb")?.classList.add("listening");
+
+    recognition.onresult = event => {
+      let finalText = "";
+      let interimText = "";
+
+      for (
+        let index = event.resultIndex;
+        index < event.results.length;
+        index++
+      ) {
+        const result = event.results[index];
+
+        if (result.isFinal) {
+          finalText += result[0].transcript;
+        } else {
+          interimText += result[0].transcript;
+        }
+      }
+
+      if (interimText) {
+        setVoiceState(
+          "I'm listening...",
+          interimText,
+          "Listening"
+        );
+      }
+
+      if (finalText.trim()) {
+        appendVoiceTranscript("You", finalText.trim());
+
+        setVoiceState(
+          "Processing your message...",
+          "Joseph AI is preparing a response.",
+          "Processing"
+        );
+
+        sendVoiceMessage(finalText.trim());
+      }
+    };
+
+    recognition.onerror = event => {
+      state.isListening = false;
+      byId("voiceOrb")?.classList.remove("listening");
+
+      setVoiceState(
+        "Voice problem",
+        `Speech recognition error: ${event.error}`,
+        "Error"
+      );
+    };
+
+    recognition.onend = () => {
+      state.isListening = false;
+      byId("voiceOrb")?.classList.remove("listening");
+
+      if (byId("voiceStatus")?.textContent === "Listening") {
+        setVoiceState(
+          "Ready to speak",
+          "Press the microphone to start again.",
+          "Ready"
+        );
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch (error) {
+      state.isListening = false;
+      showToast("Could not start the microphone.", "error");
+    }
+  }
+
+  function stopVoiceRecognition() {
+    if (state.recognition) {
+      try {
+        state.recognition.stop();
+      } catch {}
+    }
+
+    state.isListening = false;
+    byId("voiceOrb")?.classList.remove("listening");
+
+    setVoiceState(
+      "Voice stopped",
+      "Press Start speaking when you are ready.",
+      "Stopped"
+    );
+  }
+
+  async function sendVoiceMessage(text) {
+    appendVoiceTranscript("You", text);
+
+    await sendBrainMessage(text);
+
+    const lastAssistantMessage = [...state.messages]
+      .reverse()
+      .find(message => message.role === "assistant");
+
+    if (lastAssistantMessage) {
+      appendVoiceTranscript(
+        "Joseph AI",
+        lastAssistantMessage.content
+      );
+
+      const autoSpeak = byId("voiceAutoSpeak")?.checked;
+
+      if (autoSpeak) {
+        speakText(lastAssistantMessage.content);
+      }
+
+      setVoiceState(
+        "Response ready",
+        "You can continue speaking whenever you are ready.",
+        "Ready"
+      );
+    }
+  }
+
+  function setupVoice() {
+    byId("voiceStartButton")?.addEventListener(
+      "click",
+      startVoiceRecognition
+    );
+
+    byId("voiceStopButton")?.addEventListener(
+      "click",
+      stopVoiceRecognition
+    );
+
+    byId("brainVoiceButton")?.addEventListener("click", () => {
+      openPage("voice");
+      startVoiceRecognition();
+    });
+
+    byId("voiceLanguage")?.addEventListener("change", event => {
+      state.speechLanguage = event.target.value;
+    });
+  }
+
+  /* =======================================================
+     RESEARCH
+    
