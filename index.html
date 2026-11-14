@@ -728,6 +728,980 @@
 
         </section>
 
-        <!-- =====================================
+          <!-- =====================================
              WEBSITE BUILDER
-       
+        ====================================== -->
+        <section class="page-section" id="page-website-builder" data-page-section="website-builder">
+
+          <div class="section-header">
+            <div class="page-eyebrow">BUILD FOR THE REAL WORLD</div>
+            <h1>Website Builder</h1>
+            <p>Create professional websites for customers, businesses and personal projects.</p>
+          </div>
+
+          <div class="builder-layout">
+
+            <div class="builder-controls workspace-card-large">
+
+              <form id="websiteForm" class="tool-form">
+
+                <label for="websiteProjectName">Project name</label>
+                <input type="text" id="websiteProjectName" placeholder="Example: Taste Haven Restaurant">
+
+                <label for="websiteBusinessType">Website type</label>
+                <select id="websiteBusinessType">
+                  <option value="business">Business website</option>
+                  <option value="restaurant">Restaurant</option>
+                  <option value="portfolio">Personal portfolio</option>
+                  <option value="fashion">Fashion store</option>
+                  <option value="ecommerce">Online store</option>
+                  <option value="real-estate">Real estate</option>
+                  <option value="hotel">Hotel and hospitality</option>
+                  <option value="church">Church or organization</option>
+                  <option value="school">School or education</option>
+                  <option value="landing-page">Landing page</option>
+                  <option value="custom">Custom website</option>
+                </select>
+
+                <label for="websiteDescription">Describe the website</label>
+                <textarea id="websiteDescription" rows="5" placeholder="Describe the business, its customers, its services and what the website should achieve..."></textarea>
+
+                <label for="websiteStyle">Design direction</label>
+                <select id="websiteStyle">
+                  <option value="premium">Premium modern</option>
+                  <option value="minimal">Minimal and elegant</option>
+                  <option value="luxury">Luxury</option>
+                  <option value="bold">Bold and creative</option>
+                  <option value="corporate">Corporate professional</option>
+                  <option value="3d">Modern 3D-inspired</option>
+                </select>
+
+                <label for="websitePalette">Color palette</label>
+                <select id="websitePalette">
+                  <option value="auto">Choose automatically</option>
+                  <option value="dark-gold">Dark and gold</option>
+                  <option value="black-white">Black and white</option>
+                  <option value="blue-white">Blue and white</option>
+                  <option value="green">Green and natural</option>
+                  <option value="custom">Custom colors</option>
+                </select>
+
+                <label for="websiteFeatures">Required features</label>
+                <textarea id="websiteFeatures" rows="4" placeholder="Example: Contact form, services, gallery, booking, product display..."></textarea>
+
+                <label for="websiteExtra">Extra instructions</label>
+                <textarea id="websiteExtra" rows="3" placeholder="Any additional design or functionality requirements..."></textarea>
+
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="websiteSize">Website scope</label>
+                    <select id="websiteSize">
+                      <option value="landing">Landing page</option>
+                      <option value="standard">Standard website</option>
+                      <option value="large">Large multi-section website</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button class="primary-button" id="generateWebsiteButton" type="submit">
+                  ✦ Generate website
+                </button>
+
+                <p class="form-note" id="websiteFeedback">Describe your project to get started.</p>
+
+              </form>
+
+            </div>
+
+              <!-- WEBSITE PREVIEW -->
+            <div class="website-workspace workspace-card-large">
+
+              <div class="panel-heading website-toolbar">
+                <div>
+                  <h3>Live preview</h3>
+                  <span class="muted-text" id="websitePreviewStatus">No website generated</span>
+                </div>
+
+                <div class="preview-controls">
+                  <button class="preview-device-button active" id="desktopPreviewButton" type="button" title="Desktop preview">▣</button>
+                  <button class="preview-device-button" id="mobilePreviewButton" type="button" title="Mobile preview">▯</button>
+                </div>
+              </div>
+
+              <div class="preview-browser">
+                <div class="browser-bar">
+                  <span class="browser-dot"></span>
+                  <span class="browser-dot"></span>
+                  <span class="browser-dot"></span>
+                  <div class="browser-address">joseph-ai-preview.local</div>
+                </div>
+
+                <div class="preview-frame-wrap" id="previewFrameWrap">
+                  <iframe
+                    id="websitePreview"
+                    title="Generated website preview"
+                    sandbox="allow-scripts allow-forms"
+                    referrerpolicy="no-referrer"
+                  ></iframe>
+
+                  <div class="preview-placeholder" id="websitePreviewPlaceholder">
+                    <span>⌘</span>
+                    <h3>Your website preview</h3>
+                    <p>Generate a website to see it here.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="website-action-row">
+                <button class="secondary-button" id="saveWebsiteButton" type="button" disabled>Save project</button>
+                <button class="secondary-button" id="downloadWebsiteButton" type="button" disabled>Download files</button>
+                <button class="primary-button" id="publishWebsiteButton" type="button" disabled>Publish website</button>
+              </div>
+
+              <!-- GENERATED CODE -->
+              <div class="code-workspace">
+
+                <div class="panel-heading">
+                  <h3>Website files</h3>
+                </div>
+
+                <div class="code-tabs">
+                  <button class="code-tab active" data-code-tab="html" type="button">HTML</button>
+                  <button class="code-tab" data-code-tab="css" type="button">CSS</button>
+                  <button class="code-tab" data-code-tab="js" type="button">JavaScript</button>
+                </div>
+
+                <pre class="code-viewer"><code id="websiteCodeOutput">Your generated code will appear here.</code></pre>
+
+                <div class="code-actions">
+                  <button class="secondary-button" id="copyWebsiteCodeButton" type="button">Copy code</button>
+                  <button class="secondary-button" id="downloadWebsiteFileButton" type="button">Download current file</button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <div>
+                <h3>Saved website projects</h3>
+                <p class="muted-text">Your website projects will be listed here.</p>
+              </div>
+            </div>
+
+            <div class="project-grid" id="websiteProjectsList">
+              <div class="empty-state compact-empty">
+                <span>▣</span>
+                <p>No saved website projects yet.</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             APP BUILDER
+        ====================================== -->
+        <section class="page-section" id="page-app-builder" data-page-section="app-builder">
+
+          <div class="section-header">
+            <div class="page-eyebrow">APPLICATION DEVELOPMENT</div>
+            <h1>App Builder</h1>
+            <p>Plan, create and develop real applications for customers and businesses.</p>
+          </div>
+
+          <div class="builder-layout">
+
+            <div class="workspace-card-large">
+              <form id="appForm" class="tool-form">
+
+                <label for="appName">Application name</label>
+                <input id="appName" type="text" placeholder="Enter your app name">
+
+                <label for="appType">Application type</label>
+                <select id="appType">
+                  <option value="business">Business application</option>
+                  <option value="ecommerce">Shopping application</option>
+                  <option value="education">Education application</option>
+                  <option value="booking">Booking application</option>
+                  <option value="social">Social application</option>
+                  <option value="productivity">Productivity application</option>
+                  <option value="finance">Finance tracker</option>
+                  <option value="custom">Custom application</option>
+                </select>
+
+                <label for="appPlatform">Target platform</label>
+                <select id="appPlatform">
+                  <option value="web">Web application</option>
+                  <option value="android">Android application</option>
+                  <option value="both">Web and Android</option>
+                </select>
+
+                <label for="appDescription">Describe your application</label>
+                <textarea id="appDescription" rows="5" placeholder="Explain what the app does, who will use it and what problem it solves..."></textarea>
+
+                <label for="appFeatures">Required features</label>
+                <textarea id="appFeatures" rows="4" placeholder="Example: User registration, dashboard, search, notifications, admin panel..."></textarea>
+
+                <label for="appBackend">Backend requirements</label>
+                <select id="appBackend">
+                  <option value="none">Frontend prototype only</option>
+                  <option value="api">Connect to an existing API</option>
+                  <option value="database">Database and backend required</option>
+                  <option value="fullstack">Complete full-stack application</option>
+                </select>
+
+                <button class="primary-button" id="generateAppButton" type="submit">
+                  Build application project
+                </button>
+
+                <p class="form-note" id="appFeedback">
+                  Choose a platform and describe your application.
+                </p>
+
+              </form>
+            </div>
+
+            <div class="workspace-card-large">
+              <div class="panel-heading">
+                <h3>Application workspace</h3>
+                <span class="status-label" id="appStatus">Waiting</span>
+              </div>
+
+              <div class="app-output" id="appOutput">
+                <div class="empty-state">
+                  <span>▣</span>
+                  <h3>Your application project</h3>
+                  <p>Generated application files, project information and build instructions will appear here.</p>
+                </div>
+              </div>
+
+              <div class="result-actions">
+                <button class="secondary-button" id="saveAppProjectButton" type="button" disabled>Save project</button>
+                <button class="secondary-button" id="downloadAppProjectButton" type="button" disabled>Download project</button>
+                <button class="secondary-button" id="previewAppButton" type="button" disabled>Preview app</button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <h3>Publishing destinations</h3>
+
+            <div class="publishing-grid">
+              <div class="publishing-card">
+                <span class="publishing-icon">🌐</span>
+                <h4>Browser</h4>
+                <p>Prepare and deploy web applications to a hosting provider.</p>
+                <span class="status-label">Web deployment workflow</span>
+              </div>
+
+              <div class="publishing-card">
+                <span class="publishing-icon">📱</span>
+                <h4>Android</h4>
+                <p>Prepare Android application projects and supported APK/AAB builds.</p>
+                <span class="status-label">Android build workflow</span>
+              </div>
+
+              <div class="publishing-card">
+                <span class="publishing-icon">▶</span>
+                <h4>Google Play</h4>
+                <p>Prepare release files and store materials for submission.</p>
+                <span class="status-label">Store publishing preparation</span>
+              </div>
+            </div>
+
+            <p class="form-note">
+              Store publishing requires a valid developer account, signing, testing and platform approval.
+            </p>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             GAME BUILDER
+        ====================================== -->
+        <section class="page-section" id="page-game-builder" data-page-section="game-builder">
+
+          <div class="section-header">
+            <div class="page-eyebrow">GAME DEVELOPMENT STUDIO</div>
+            <h1>Game Builder</h1>
+            <p>Create browser games and develop larger game projects.</p>
+          </div>
+
+          <div class="workspace-card-large">
+
+            <form id="gameForm" class="tool-form">
+
+              <label for="gameName">Game name</label>
+              <input id="gameName" type="text" placeholder="Enter your game name">
+
+              <label for="gameGenre">Game genre</label>
+              <select id="gameGenre">
+                <option value="platformer">2D Platformer</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="racing">Racing</option>
+                <option value="arcade">Arcade</option>
+                <option value="quiz">Quiz</option>
+                <option value="adventure">Adventure</option>
+                <option value="simulation">Simulation</option>
+                <option value="sports">Sports</option>
+                <option value="3d">3D game</option>
+              </select>
+
+              <label for="gameLevel">Project complexity</label>
+              <select id="gameLevel">
+                <option value="easy">Easy — beginner-friendly</option>
+                <option value="intermediate">Intermediate — more advanced features</option>
+                <option value="professional">Professional — larger game project</option>
+              </select>
+
+              <label for="gamePlatform">Target platform</label>
+              <select id="gamePlatform">
+                <option value="browser">Browser</option>
+                <option value="android">Android</option>
+                <option value="desktop">Desktop</option>
+                <option value="multiple">Multiple platforms</option>
+              </select>
+
+              <label for="gameDescription">Describe your game</label>
+              <textarea id="gameDescription" rows="5" placeholder="Describe gameplay, characters, levels, controls, goals and visual style..."></textarea>
+
+              <label for="gameFeatures">Features and mechanics</label>
+              <textarea id="gameFeatures" rows="3" placeholder="Example: Score, enemies, levels, power-ups, multiplayer..."></textarea>
+
+              <button class="primary-button" id="generateGameButton" type="submit">
+                Create game project
+              </button>
+
+              <p class="form-note" id="gameFeedback">Choose your game type and describe your idea.</p>
+
+            </form>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <h3>Game preview and project</h3>
+              <span class="status-label" id="gameStatus">Waiting</span>
+            </div>
+
+            <div class="game-preview" id="gameOutput">
+              <div class="empty-state">
+                <span>◇</span>
+                <h3>Your game will appear here</h3>
+                <p>Game files, previews and project information will be displayed here.</p>
+              </div>
+            </div>
+
+            <div class="result-actions">
+              <button class="secondary-button" id="saveGameProjectButton" type="button" disabled>Save game</button>
+              <button class="secondary-button" id="downloadGameProjectButton" type="button" disabled>Download project</button>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             CONTENT STUDIO
+        ====================================== -->
+        <section class="page-section" id="page-content-studio" data-page-section="content-studio">
+
+          <div class="section-header">
+            <div class="page-eyebrow">CREATIVE CONTENT WORKSPACE</div>
+            <h1>Content Studio</h1>
+            <p>Plan, write and produce content for businesses, brands and social media.</p>
+          </div>
+
+          <div class="builder-layout">
+
+            <div class="workspace-card-large">
+
+              <form id="contentForm" class="tool-form">
+
+                <label for="contentType">Content type</label>
+                <select id="contentType">
+                  <option value="social-post">Social media post</option>
+                  <option value="caption">Caption</option>
+                  <option value="advertisement">Advertisement</option>
+                  <option value="article">Article or blog</option>
+                  <option value="product-description">Product description</option>
+                  <option value="video-script">Video script</option>
+                  <option value="promotional-message">Promotional message</option>
+                  <option value="email">Marketing email</option>
+                  <option value="story">Storytelling</option>
+                  <option value="content-plan">Content plan</option>
+                </select>
+
+                <label for="contentPlatform">Platform</label>
+                <select id="contentPlatform">
+                  <option value="general">General</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="x">X</option>
+                  <option value="website">Website</option>
+                  <option value="whatsapp">WhatsApp</option>
+                </select>
+
+                <label for="contentSubject">Topic or subject</label>
+                <textarea id="contentSubject" rows="4" placeholder="What should this content be about?"></textarea>
+
+                <label for="contentAudience">Target audience</label>
+                <input id="contentAudience" type="text" placeholder="Who should this content reach?">
+
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="contentTone">Tone</label>
+                    <select id="contentTone">
+                      <option value="professional">Professional</option>
+                      <option value="friendly">Friendly</option>
+                      <option value="persuasive">Persuasive</option>
+                      <option value="funny">Funny</option>
+                      <option value="luxury">Luxury</option>
+                      <option value="educational">Educational</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="contentGoal">Goal</label>
+                    <select id="contentGoal">
+                      <option value="engagement">Engagement</option>
+                      <option value="sales">Increase sales</option>
+                      <option value="awareness">Brand awareness</option>
+                      <option value="education">Educate audience</option>
+                      <option value="traffic">Drive traffic</option>
+                    </select>
+                  </div>
+                </div>
+
+                <label for="contentExtra">Additional instructions</label>
+                <textarea id="contentExtra" rows="3" placeholder="Add important details, brand information or instructions..."></textarea>
+
+                <button class="primary-button" id="generateContentButton" type="submit">
+                  Generate content
+                </button>
+
+                <p class="form-note" id="contentFeedback">Your content will be generated here.</p>
+
+              </form>
+
+            </div>
+
+            <div class="workspace-card-large">
+
+              <div class="panel-heading">
+                <h3>Content result</h3>
+                <span class="status-label" id="contentStatus">Waiting</span>
+              </div>
+
+              <div class="content-output" id="contentOutput">
+                <div class="empty-state">
+                  <span>✎</span>
+                  <h3>Your content will appear here</h3>
+                  <p>Generate your first piece of content to get started.</p>
+                </div>
+              </div>
+
+              <div class="result-actions">
+                <button class="secondary-button" id="copyContentButton" type="button" disabled>Copy</button>
+                <button class="secondary-button" id="downloadContentButton" type="button" disabled>Download</button>
+                <button class="secondary-button" id="regenerateContentButton" type="button" disabled>Regenerate</button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <h3>Content history</h3>
+            </div>
+            <div class="project-grid" id="contentHistoryList">
+              <div class="empty-state compact-empty">
+                <span>◷</span>
+                <p>Your generated content will be saved here.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="workspace-card-large">
+            <h3>Publishing and scheduling</h3>
+            <p class="muted-text">
+              Connect supported social accounts before scheduling or publishing content.
+            </p>
+
+            <div class="publishing-grid">
+              <div class="publishing-card">
+                <h4>Social accounts</h4>
+                <p>Manage authorized social account connections.</p>
+                <button class="secondary-button" id="connectSocialButton" type="button">Manage connections</button>
+              </div>
+
+              <div class="publishing-card">
+                <h4>Content calendar</h4>
+                <p>Plan content dates and publishing schedules.</p>
+                <button class="secondary-button" id="openContentCalendarButton" type="button">Open calendar</button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             REMOTE WORK
+        ====================================== -->
+        <section class="page-section" id="page-remote-work" data-page-section="remote-work">
+
+          <div class="section-header">
+            <div class="page-eyebrow">REAL-WORLD OPPORTUNITIES</div>
+            <h1>Remote Work</h1>
+            <p>Discover legitimate remote jobs and freelance opportunities.</p>
+          </div>
+
+          <div class="workspace-card-large">
+
+            <form id="jobsForm" class="tool-form">
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="jobCategory">Job category</label>
+                  <select id="jobCategory">
+                    <option value="all">All categories</option>
+                    <option value="Website Developer">Website Developer</option>
+                    <option value="App Developer">App Developer</option>
+                    <option value="UI/UX Designer">UI/UX Designer</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Content Writer">Content Writer</option>
+                    <option value="Social Media Assistant">Social Media Assistant</option>
+                    <option value="Customer Support">Customer Support</option>
+                    <option value="Virtual Assistant">Virtual Assistant</option>
+                    <option value="Data Entry">Data Entry</option>
+                    <option value="Online Research">Online Research</option>
+                    <option value="Video Editor">Video Editor</option>
+                    <option value="AI Training">AI Training and Data Annotation</option>
+                    <option value="Digital Marketing">Digital Marketing</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="jobLocation">Location eligibility</label>
+                  <select id="jobLocation">
+                    <option value="Nigeria">Nigeria eligible</option>
+                    <option value="Worldwide">Worldwide remote</option>
+                    <option value="Africa">Africa</option>
+                    <option value="Any">Any location</option>
+                  </select>
+                </div>
+              </div>
+
+              <label for="jobKeywords">Additional keywords</label>
+              <input id="jobKeywords" type="text" placeholder="Example: Beginner, no certificate, entry-level">
+
+              <button class="primary-button" id="findJobsButton" type="submit">
+                Find real opportunities
+              </button>
+
+              <p class="form-note" id="jobsFeedback">We will show available listings and their original sources.</p>
+
+            </form>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <h3>Job opportunities</h3>
+              <span class="status-label" id="jobsStatus">Waiting</span>
+            </div>
+
+            <div class="jobs-list" id="jobsResults">
+              <div class="empty-state">
+                <span>↗</span>
+                <h3>Find your next opportunity</h3>
+                <p>Search for real jobs and check their requirements and eligibility.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="workspace-card-large">
+            <h3>My applications</h3>
+            <div class="project-grid" id="jobApplicationsList">
+              <div class="empty-state compact-empty">
+                <span>▤</span>
+                <p>Your prepared applications will appear here.</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             AUTOPILOT
+        ====================================== -->
+        <section class="page-section" id="page-autopilot" data-page-section="autopilot">
+
+          <div class="section-header">
+            <div class="page-eyebrow">YOUR DIGITAL WORK PARTNER</div>
+            <h1>Autopilot</h1>
+            <p>Let Joseph AI help organize opportunities, prepare work and guide your next steps.</p>
+          </div>
+
+          <div class="autopilot-banner workspace-card-large">
+            <div class="autopilot-symbol">✧</div>
+            <div>
+              <h2>Work smarter with Joseph AI</h2>
+              <p>Discover useful tasks, prepare applications and manage approved work.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+
+            <div class="stat-card">
+              <span class="stat-icon">⌕</span>
+              <strong id="autopilotOpportunityCount">0</strong>
+              <span>Opportunities found</span>
+            </div>
+
+            <div class="stat-card">
+              <span class="stat-icon">▤</span>
+              <strong id="autopilotTaskCount">0</strong>
+              <span>Tasks prepared</span>
+            </div>
+
+            <div class="stat-card">
+              <span class="stat-icon">✓</span>
+              <strong id="autopilotCompletedCount">0</strong>
+              <span>Completed tasks</span>
+            </div>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <h3>Today's opportunities</h3>
+              <button class="primary-button" id="scanOpportunitiesButton" type="button">Find opportunities</button>
+            </div>
+
+            <div id="autopilotOpportunities" class="jobs-list">
+              <div class="empty-state">
+                <span>✧</span>
+                <h3>Your opportunities will appear here</h3>
+                <p>Joseph AI should use real sources and explain why each opportunity may be suitable.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="workspace-card-large">
+            <h3>Task approval and activity</h3>
+            <p class="muted-text">
+              Review important actions before Joseph AI applies, publishes, pays or makes changes on your behalf.
+            </p>
+            <div id="autopilotTasks" class="project-grid"></div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             MY PROJECTS
+        ====================================== -->
+        <section class="page-section" id="page-projects" data-page-section="projects">
+
+          <div class="section-header">
+            <div class="page-eyebrow">YOUR CREATIONS</div>
+            <h1>My Projects</h1>
+            <p>Manage your saved websites, applications, games, images and content.</p>
+          </div>
+
+          <div class="project-filter-bar">
+            <button class="filter-button active" data-project-filter="all" type="button">All projects</button>
+            <button class="filter-button" data-project-filter="website" type="button">Websites</button>
+            <button class="filter-button" data-project-filter="app" type="button">Apps</button>
+            <button class="filter-button" data-project-filter="game" type="button">Games</button>
+            <button class="filter-button" data-project-filter="content" type="button">Content</button>
+            <button class="filter-button" data-project-filter="image" type="button">Images</button>
+          </div>
+
+          <div class="project-grid" id="allProjectsList">
+            <div class="empty-state">
+              <span>▣</span>
+              <h3>Your projects will appear here</h3>
+              <p>Start creating and save your work to build your project library.</p>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             HISTORY
+        ====================================== -->
+        <section class="page-section" id="page-history" data-page-section="history">
+
+          <div class="section-header">
+            <div class="page-eyebrow">YOUR ACTIVITY</div>
+            <h1>History</h1>
+            <p>Review your conversations and recent activity.</p>
+          </div>
+
+          <div class="workspace-card-large">
+
+            <div class="panel-heading">
+              <h3>Recent conversations</h3>
+              <button class="secondary-button" id="clearHistoryButton" type="button">Clear history</button>
+            </div>
+
+            <div id="conversationHistoryList" class="history-list">
+              <div class="empty-state">
+                <span>◷</span>
+                <h3>No conversation history yet</h3>
+                <p>Your saved conversations will appear here.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="workspace-card-large">
+            <h3>Recent activity</h3>
+            <div id="activityHistoryList" class="history-list">
+              <div class="empty-state compact-empty">
+                <p>Your recent activity will appear here.</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             MEMORY
+        ====================================== -->
+        <section class="page-section" id="page-memory" data-page-section="memory">
+
+          <div class="section-header">
+            <div class="page-eyebrow">PERSONAL CONTEXT</div>
+            <h1>Memory</h1>
+            <p>Manage the information Joseph AI can use to maintain useful context.</p>
+          </div>
+
+          <div class="workspace-card-large">
+            <div class="panel-heading">
+              <h3>Memory settings</h3>
+              <span class="status-label" id="memoryStatus">Local workspace</span>
+            </div>
+
+            <label class="toggle-label">
+              <input type="checkbox" id="memoryEnabled" checked>
+              Enable memory features
+            </label>
+
+            <p class="muted-text">
+              Memory should be transparent and controllable. Sensitive information should not be stored without a clear reason and permission.
+            </p>
+
+            <div class="memory-list" id="memoryList">
+              <div class="empty-state compact-empty">
+                <span>◈</span>
+                <p>Saved memory items will appear here when memory is connected.</p>
+              </div>
+            </div>
+
+            <form id="memoryForm" class="tool-form">
+              <label for="memoryInput">Add useful information</label>
+              <textarea id="memoryInput" rows="3" placeholder="Enter information you want Joseph AI to remember..."></textarea>
+              <button class="primary-button" id="saveMemoryButton" type="submit">Save memory</button>
+            </form>
+
+          </div>
+
+        </section>
+
+        
+        <!-- =====================================
+             SETTINGS
+        ====================================== -->
+        <section class="page-section" id="page-settings" data-page-section="settings">
+
+          <div class="section-header">
+            <div class="page-eyebrow">PERSONALIZE YOUR WORKSPACE</div>
+            <h1>Settings</h1>
+            <p>Configure Joseph AI and manage its connected services.</p>
+          </div>
+
+          <div class="settings-layout">
+
+            <div class="workspace-card-large">
+
+              <h3>Appearance</h3>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Color theme</strong>
+                  <p>Choose your workspace appearance.</p>
+                </div>
+                <select id="appearanceSetting">
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="system">System</option>
+                </select>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Compact interface</strong>
+                  <p>Use a more compact layout.</p>
+                </div>
+                <input type="checkbox" id="compactModeSetting">
+              </div>
+
+            </div>
+
+            <div class="workspace-card-large">
+
+              <h3>AI preferences</h3>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Default AI model</strong>
+                  <p>Choose an available connected model.</p>
+                </div>
+                <select id="defaultModelSetting">
+                  <option value="auto">Automatic selection</option>
+                  <option value="gemini">Gemini</option>
+                  <option value="openai">OpenAI — when connected</option>
+                </select>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Internet research</strong>
+                  <p>Allow supported live search features.</p>
+                </div>
+                <input type="checkbox" id="webSearchSetting" checked>
+              </div>
+
+            </div>
+
+            <div class="workspace-card-large">
+
+              <h3>Voice preferences</h3>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Speak AI responses</strong>
+                  <p>Read responses aloud when supported.</p>
+                </div>
+                <input type="checkbox" id="speakResponsesSetting">
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Voice language</strong>
+                  <p>Choose your preferred spoken language.</p>
+                </div>
+                <select id="voiceLanguageSetting">
+                  <option value="en-US">English</option>
+                  <option value="en-GB">English (UK)</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="workspace-card-large">
+
+              <h3>Connected services</h3>
+
+              <div class="integration-list" id="integrationList">
+
+                <div class="integration-row">
+                  <div>
+                    <strong>Gemini AI</strong>
+                    <p>Text generation and reasoning provider.</p>
+                  </div>
+                  <span class="status-label">Backend configuration</span>
+                </div>
+
+                <div class="integration-row">
+                  <div>
+                    <strong>Internet Search</strong>
+                    <p>Search provider for current information.</p>
+                  </div>
+                  <span class="status-label">Backend configuration</span>
+                </div>
+
+                <div class="integration-row">
+                  <div>
+                    <strong>Image Generation</strong>
+                    <p>Image creation and editing provider.</p>
+                  </div>
+                  <span class="status-label">Not configured</span>
+                </div>
+
+                <div class="integration-row">
+                  <div>
+                    <strong>Video Generation</strong>
+                    <p>Video generation provider.</p>
+                  </div>
+                  <span class="status-label">Not configured</span>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="workspace-card-large">
+
+              <h3>Data and privacy</h3>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Export workspace data</strong>
+                  <p>Download supported local workspace information.</p>
+                </div>
+                <button class="secondary-button" id="exportDataButton" type="button">Export</button>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <strong>Clear local workspace data</strong>
+                  <p>Remove locally saved information from this browser.</p>
+                </div>
+                <button class="danger-button" id="clearLocalDataButton" type="button">Clear data</button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- GLOBAL TOAST -->
+      <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+      <!-- GLOBAL LOADING OVERLAY -->
+      <div class="loading-overlay" id="loadingOverlay" hidden>
+        <div class="loading-card">
+          <div class="loading-spinner"></div>
+          <strong id="loadingTitle">Joseph AI is working...</strong>
+          <p id="loadingDescription">Please wait.</p>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+</body>
+</html>
